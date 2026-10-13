@@ -1,0 +1,636 @@
+<title>VenGuard Dashboard</title>
+<base target="_blank">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* Layout: navy rail on the left (top bar on phones), work surface on Mist, white panels.
+   Brand: VenGuard Brand Guidelines. Red/amber/green stay reserved for device safety states,
+   so lead statuses are told apart by label + icon shape, not traffic-light colours. */
+:root {
+  --navy: #0B2A4A;
+  --teal: #12B5A6;
+  --teal-ink: #0A7F76;
+  --bg: #EAF2F6;
+  --panel: #FFFFFF;
+  --panel-2: #F5F9FB;
+  --ink: #0A1622;
+  --muted: #5B6B7A;
+  --line: #D5E2EA;
+  --rail: #0B2A4A;
+  --rail-ink: #C9D7E2;
+  --rail-active: #12355C;
+  --bar: #0A7F76;
+  --bar-soft: #9FD9D3;
+  --grid: #E3ECF1;
+  --focus: #12B5A6;
+  --shadow: 0 1px 2px rgba(11,42,74,.06), 0 4px 16px rgba(11,42,74,.05);
+  --font: "Inter", "Noto Sans Bengali", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #07182B; --panel: #0E2440; --panel-2: #112B4B; --ink: #E8F0F5; --muted: #9DB0C0;
+    --line: #1E3A5C; --rail: #051222; --rail-ink: #9DB0C0; --rail-active: #12355C;
+    --bar: #2CC5B6; --bar-soft: #1B5E5A; --grid: #173252; --teal-ink: #4FD6C8; --navy: #E8F0F5;
+    --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #07182B; --panel: #0E2440; --panel-2: #112B4B; --ink: #E8F0F5; --muted: #9DB0C0;
+  --line: #1E3A5C; --rail: #051222; --rail-ink: #9DB0C0; --rail-active: #12355C;
+  --bar: #2CC5B6; --bar-soft: #1B5E5A; --grid: #173252; --teal-ink: #4FD6C8; --navy: #E8F0F5;
+  --shadow: none; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--mono); font-size: .86em; }
+
+.app { display: grid; grid-template-columns: 228px minmax(0, 1fr); min-height: 100%; }
+.rail { background: var(--rail); color: var(--rail-ink); padding: 20px 14px; display: flex; flex-direction: column; gap: 24px; position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh; }
+.brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 1.1rem; padding: 0 8px; }
+.brand svg { width: 26px; height: 26px; }
+.brand small { display: block; font-weight: 500; font-size: .75rem; color: var(--rail-ink); }
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav button { all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: var(--rail-ink); font-weight: 500; }
+.nav button svg { width: 20px; height: 20px; flex: none; }
+.nav button:hover { background: var(--rail-active); color: #fff; }
+.nav button[aria-current="page"] { background: var(--rail-active); color: #fff; box-shadow: inset 3px 0 0 #12B5A6; }
+.nav button:focus-visible { outline: 2px solid #12B5A6; }
+.nav .count { margin-left: auto; font-size: .78rem; background: #12B5A6; color: #05221F; border-radius: 999px; padding: 0 7px; font-weight: 700; }
+.me { margin-top: auto; font-size: .82rem; padding: 10px 8px 0; border-top: 1px solid rgba(255,255,255,.1); }
+.me strong { color: #fff; display: block; font-weight: 600; overflow-wrap: anywhere; }
+.me .muted { color: var(--rail-ink); overflow-wrap: anywhere; }
+.role { display: inline-block; margin-top: 4px; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; border: 1px solid rgba(255,255,255,.25); padding: 1px 8px; border-radius: 999px; }
+
+main { min-width: 0; padding-block: 24px 48px; padding-inline: clamp(16px, 3vw, 36px); }
+.topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+h1 { font-size: 1.6rem; margin: 0; letter-spacing: -.02em; color: var(--navy); text-wrap: balance; }
+h2 { font-size: 1rem; margin: 0 0 12px; color: var(--navy); letter-spacing: -.01em; }
+.sub { color: var(--muted); font-size: .9rem; }
+.banner { background: var(--panel); border: 1px dashed var(--teal-ink); color: var(--ink); border-radius: 12px; padding: 10px 14px; margin-bottom: 18px; font-size: .9rem; display: flex; gap: 10px; align-items: flex-start; }
+.banner svg { flex: none; width: 18px; height: 18px; color: var(--teal-ink); margin-top: 2px; }
+.error { border-style: solid; border-color: var(--navy); }
+
+.seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.seg button { all: unset; cursor: pointer; padding: 5px 12px; border-radius: 999px; font-size: .86rem; font-weight: 500; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--navy); color: var(--panel); }
+:root[data-theme="dark"] .seg button[aria-pressed="true"] { color: #07182B; }
+.btn { cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 8px 16px; font-weight: 600; font-size: .9rem; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); }
+.btn:hover { border-color: var(--teal-ink); }
+.btn.primary { background: var(--teal-ink); border-color: var(--teal-ink); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn svg { width: 16px; height: 16px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); min-width: 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.kpi .label { font-size: .8rem; color: var(--muted); font-weight: 500; }
+.kpi .value { font-size: 1.9rem; font-weight: 700; color: var(--navy); letter-spacing: -.02em; line-height: 1.2; margin-top: 2px; }
+.kpi .hint { font-size: .78rem; color: var(--muted); }
+.kpi.lead { background: var(--navy); border-color: var(--navy); }
+.kpi.lead .label, .kpi.lead .hint { color: #B9CCD8; }
+.kpi.lead .value { color: #fff; }
+:root[data-theme="dark"] .kpi.lead { background: #12355C; border-color: #12355C; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kpi.lead { background: #12355C; border-color: #12355C; } }
+
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; margin-bottom: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1100px) { .grid3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 860px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: 220px; overflow: visible; }
+.chart text { fill: var(--muted); font-size: 11px; font-family: var(--font); }
+.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+.chart .barp { fill: var(--bar); }
+.chart rect.hit { fill: transparent; cursor: default; }
+.chart g:hover .barp { fill: var(--teal); }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--panel); font-size: .8rem; padding: 6px 9px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -110%); opacity: 0; transition: opacity .1s; }
+.tip.on { opacity: 1; }
+.hbars { display: grid; gap: 8px; }
+.hbar { display: grid; grid-template-columns: minmax(0, 9em) minmax(0, 1fr) 3.2em; gap: 10px; align-items: center; font-size: .88rem; }
+.hbar .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hbar .track { display: block; height: 10px; background: var(--panel-2); border-radius: 4px; overflow: hidden; }
+.hbar .track > .fill, .fstep .track > .fill { display: block; }
+.hbar .fill { height: 100%; background: var(--bar); border-radius: 0 4px 4px 0; }
+.hbar .v { text-align: right; color: var(--muted); }
+.funnel { display: grid; gap: 10px; }
+.fstep { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; }
+.fstep .track { display: block; grid-column: 1 / -1; height: 14px; background: var(--panel-2); border-radius: 4px; overflow: hidden; }
+.fstep .fill { height: 100%; background: var(--bar); border-radius: 0 4px 4px 0; }
+.fstep .v { color: var(--muted); font-size: .85rem; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.search { flex: 1 1 240px; min-width: 0; position: relative; }
+.search input { width: 100%; padding: 9px 12px 9px 36px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--panel); }
+.search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); }
+select.f { padding: 8px 10px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--panel); max-width: 100%; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--panel-2); position: sticky; top: 0; }
+th button { all: unset; cursor: pointer; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--panel-2); }
+tbody tr:last-child td { border-bottom: 0; }
+td.name { white-space: normal; min-width: 140px; }
+.empty { padding: 32px; text-align: center; color: var(--muted); }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; padding: 2px 10px 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); }
+.pill svg { width: 12px; height: 12px; }
+.pill.s-new { border-color: var(--teal-ink); color: var(--teal-ink); }
+.pill.s-payment_pending { border-style: dashed; border-color: var(--navy); }
+.pill.s-paid, .pill.s-installed { background: var(--navy); color: var(--panel); border-color: var(--navy); }
+.pill.s-not_interested, .pill.s-refunded { color: var(--muted); }
+.type { font-size: .8rem; color: var(--muted); }
+
+.drawer-bg { position: fixed; inset: 0; background: rgba(5,18,34,.45); z-index: 20; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); background: var(--panel); z-index: 21; overflow-y: auto; padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(24px + env(safe-area-inset-bottom, 0px)); box-shadow: -8px 0 24px rgba(5,18,34,.2); display: flex; flex-direction: column; gap: 16px; }
+.drawer header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.x { all: unset; cursor: pointer; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 999px; border: 1px solid var(--line); }
+.dl { display: grid; grid-template-columns: 9em minmax(0, 1fr); gap: 6px 12px; font-size: .9rem; margin: 0; }
+.dl dt { color: var(--muted); }
+.dl dd { margin: 0; overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+label.fl { display: grid; gap: 6px; font-weight: 600; font-size: .88rem; color: var(--navy); }
+label.fl input, label.fl select, label.fl textarea { font-weight: 400; color: var(--ink); padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--panel); width: 100%; }
+label.fl textarea { min-height: 90px; resize: vertical; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } .dl { grid-template-columns: 7.5em minmax(0, 1fr); } }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--panel); padding: 10px 16px; border-radius: 999px; font-size: .9rem; z-index: 30; }
+.followup li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.followup li:last-child { border-bottom: 0; }
+.followup ul { list-style: none; margin: 0; padding: 0; }
+.qr { background: #fff; padding: 10px; border-radius: 10px; display: inline-block; }
+.switch { display: flex; align-items: center; gap: 12px; }
+.switch input { width: 44px; height: 24px; accent-color: var(--teal-ink); }
+.muted { color: var(--muted); }
+.stack { display: grid; gap: 16px; }
+.log li { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .86rem; display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 10px; }
+.log ul { list-style: none; margin: 0; padding: 0; max-height: 420px; overflow-y: auto; }
+
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; }
+  .rail { position: sticky; top: env(safe-area-inset-top, 0px); height: auto; flex-direction: row; align-items: center; padding: 10px 12px; gap: 8px; z-index: 10; overflow-x: auto; }
+  .brand small, .me { display: none; }
+  .brand { padding: 0; font-size: 1rem; }
+  .nav { flex-direction: row; gap: 2px; margin-left: auto; }
+  .nav button { padding: 8px 10px; }
+  .nav button span.lbl { display: none; }
+  .nav button[aria-current="page"] { box-shadow: inset 0 -3px 0 #12B5A6; }
+  main { padding-block: 16px 40px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <aside class="rail">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3 5 7v8c0 7 4.7 11.6 11 14 6.3-2.4 11-7 11-14V7L16 3Z"/><path d="M9.5 16.5c2.2-2.6 4.3-2.6 6.5 0s4.3 2.6 6.5 0" stroke="#12B5A6"/></svg>
+      <div>VenGuard<small>Team dashboard</small></div>
+    </div>
+    <nav class="nav" aria-label="Sections">
+      <button data-view="overview" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lbl">Overview</span></button>
+      <button data-view="leads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="lbl">Orders &amp; leads</span><span class="count num" id="newCount" hidden></span></button>
+      <button data-view="dealers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v9h14v-9"/></svg><span class="lbl">Dealers</span></button>
+      <button data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg><span class="lbl">Settings &amp; team</span></button>
+    </nav>
+    <div class="me" id="me"></div>
+  </aside>
+  <main id="main"><p class="sub">Loading&#x2026;</p></main>
+</div>
+<div id="drawerRoot"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  /* ============ Data source: Apps Script when deployed, example data otherwise ============ */
+  var LIVE = !!(window.google && google.script && google.script.run);
+  function api(fn) {
+    var args = [].slice.call(arguments, 1);
+    return new Promise(function (res, rej) {
+      if (LIVE) {
+        var r = google.script.run.withSuccessHandler(res).withFailureHandler(function (e) { rej(e && e.message ? e.message : String(e)); });
+        r[fn].apply(r, args);
+      } else {
+        try { res(MOCK[fn].apply(null, args)); } catch (e) { rej(e.message); }
+      }
+    });
+  }
+
+  var MOCK = (function () {
+    var seed = 7;
+    function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+    function pick(a, w) {
+      if (!w) return a[Math.floor(rnd() * a.length)];
+      var t = w.reduce(function (s, x) { return s + x; }, 0), r = rnd() * t;
+      for (var i = 0; i < a.length; i++) { r -= w[i]; if (r <= 0) return a[i]; } return a[0];
+    }
+    var names = ["Rahima Khatun", "Tanvir Hasan", "Nusrat Jahan", "Arif Chowdhury", "Shirin Akter", "Mahmudul Karim", "Farzana Rahman", "Sabbir Ahmed", "Taslima Begum", "Imran Hossain", "Jannatul Ferdous", "Rakib Uddin", "Sumaiya Islam", "Kamal Pasha", "Rokeya Sultana", "Nadia Haque"];
+    var areas = { Dhaka: ["Mirpur 10", "Dhanmondi", "Uttara Sector 7", "Mohammadpur", "Badda", "Bashundhara R/A"], Chattogram: ["Agrabad", "Nasirabad", "Halishahar"], Gazipur: ["Tongi", "Joydebpur"], Narayanganj: ["Fatullah"], Sylhet: ["Zindabazar"], Khulna: ["Sonadanga"], Rajshahi: ["Shaheb Bazar"] };
+    var districts = Object.keys(areas), dW = [52, 16, 9, 6, 6, 6, 5];
+    var dealerCodes = ["DH-042", "DH-017", "CT-005", "GZ-003"];
+    var leads = [], now = Date.now(), n = 0;
+    for (var d = 59; d >= 0; d--) {
+      var per = Math.round(1 + rnd() * 3 + (59 - d) / 14);
+      for (var k = 0; k < per; k++) {
+        n++;
+        var type = pick(["preorder", "enquiry", "dealer", "contact", "waitlist"], [66, 13, 7, 9, 5]);
+        var dist = pick(districts, dW);
+        var t = new Date(now - d * 864e5 - Math.floor(rnd() * 864e5 * 0.9));
+        var src = pick(["facebook", "", "google", "whatsapp", "dealer_qr"], [42, 20, 14, 12, 12]);
+        var dealer = src === "dealer_qr" ? pick(dealerCodes, [5, 3, 2, 1]) : (rnd() < 0.05 ? pick(dealerCodes) : "");
+        var status;
+        if (type === "preorder") status = d < 2 ? pick(["payment_pending", "paid"], [6, 4]) : d < 8 ? pick(["paid", "payment_pending", "contacted"], [5, 3, 2]) : pick(["paid", "contacted", "refunded", "not_interested"], [62, 22, 6, 6]);
+        else status = d < 3 ? "new" : d < 6 ? pick(["new", "contacted"], [1, 2]) : pick(["contacted", "not_interested"], [6, 1]);
+        var kt = type === "preorder" ? pick(["home", "restaurant", "building"], [82, 12, 6]) : type === "enquiry" ? pick(["landlord", "restaurant", "other_business"], [5, 4, 1]) : type === "dealer" ? "dealer" : type === "waitlist" ? pick(["agro", "marine"], [3, 1]) : pick(["home", "support", "press", "dealer"], [5, 3, 1, 1]);
+        var ymd = t.toISOString().slice(2, 10).replace(/-/g, "");
+        leads.push({
+          submitted_at: t.toISOString(), order_id: "VG-" + ymd + "-" + Math.floor(rnd() * 46655 + 1296).toString(36).toUpperCase().padStart(4, "X"),
+          form_type: type, status: status, name: pick(names), phone: "017" + String(Math.floor(10000000 + rnd() * 89999999)),
+          email: rnd() < 0.4 ? "example" + n + "@mail.example" : "", organisation: type === "enquiry" ? pick(["Rose View Tower", "Kacchi Bhai", "Green Plaza Apartments", "Star Kabab"]) : type === "dealer" ? pick(["Mollah Gas House", "Karim Hardware", "Nabil LPG Point"]) : "",
+          area: pick(areas[dist]), district: dist, kitchen_type: kt, units: type === "enquiry" ? Math.floor(4 + rnd() * 40) : type === "preorder" ? (kt === "home" ? 1 : Math.floor(2 + rnd() * 6)) : "",
+          cylinder_brand: type === "preorder" ? pick(["Bashundhara", "Omera", "Jamuna", "Beximco", "Unknown", ""]) : "", heard_from: src === "" ? pick(["friend", "news", ""]) : "",
+          dealer_code: dealer, utm_source: src === "dealer_qr" ? "qr" : src, referrer: src === "google" ? "www.google.com" : "direct",
+          lang: rnd() < 0.78 ? "bn" : "en", message: type === "contact" ? "Does it fit a 12 kg Bashundhara cylinder?" : "", consent: "yes",
+          payment_status: status === "paid" || status === "installed" ? "paid" : (type === "preorder" && status === "payment_pending" && rnd() < 0.3 ? "failed" : ""),
+          payment_method: status === "paid" ? pick(["bKash", "Nagad", "VISA"], [6, 3, 1]) : "", team_notes: status === "contacted" ? "Called, will pay by bKash on Friday." : ""
+        });
+      }
+    }
+    var dealers = [
+      { code: "DH-042", shop_name: "Mollah Gas House", owner_name: "Abdul Mollah", phone: "01711000042", area: "Mirpur 10", district: "Dhaka", status: "active", created_at: new Date(now - 40 * 864e5).toISOString(), notes: "Busy corner shop, 300+ cylinders/month" },
+      { code: "DH-017", shop_name: "Karim Hardware", owner_name: "Rezaul Karim", phone: "01811000017", area: "Mohammadpur", district: "Dhaka", status: "active", created_at: new Date(now - 33 * 864e5).toISOString(), notes: "" },
+      { code: "CT-005", shop_name: "Port City LPG", owner_name: "Jasim Uddin", phone: "01911000005", area: "Agrabad", district: "Chattogram", status: "active", created_at: new Date(now - 21 * 864e5).toISOString(), notes: "" },
+      { code: "GZ-003", shop_name: "Tongi Gas Point", owner_name: "Shahin Alam", phone: "01611000003", area: "Tongi", district: "Gazipur", status: "trial", created_at: new Date(now - 9 * 864e5).toISOString(), notes: "Trial month" }
+    ];
+    var settings = { preorder_open: true, kit_price_bdt: "", notice_bn: "", notice_en: "" };
+    var team = [
+      { email: "founder@venguard.example", name: "Example Founder", role: "founder", active: true },
+      { email: "support@venguard.example", name: "Support Desk", role: "support", active: true },
+      { email: "marketing@venguard.example", name: "Marketing", role: "marketing", active: true }
+    ];
+    var activity = [{ time: new Date(now - 36e5).toISOString(), user: "support@venguard.example", action: "lead_update", ref: leads[leads.length - 5].order_id, detail: "status \u2192 contacted" }];
+    function log(a, r, d) { activity.unshift({ time: new Date().toISOString(), user: team[0].email, action: a, ref: r, detail: d }); }
+    return {
+      getBootstrap: function () {
+        return { user: { email: team[0].email, name: team[0].name, role: "founder" }, leads: leads, dealers: dealers, settings: settings, team: team, activity: activity, siteUrl: "https://oasisnextbd.github.io/OASIS_official_website/VENGuard", statuses: ["new", "payment_pending", "contacted", "paid", "refunded", "installed", "not_interested"], generatedAt: new Date().toISOString() };
+      },
+      updateLead: function (id, c) { var l = leads.filter(function (x) { return x.order_id === id; })[0]; Object.keys(c).forEach(function (k) { l[k] = c[k]; }); log("lead_update", id, Object.keys(c).join(", ")); return true; },
+      saveDealer: function (d) { var code = String(d.code || "").toUpperCase(); if (!code) throw new Error("A dealer code is needed, e.g. DH-042."); var e = dealers.filter(function (x) { return x.code === code; })[0]; if (e) Object.assign(e, d, { code: code }); else dealers.push(Object.assign({ created_at: new Date().toISOString() }, d, { code: code })); log(e ? "dealer_update" : "dealer_add", code, d.shop_name || ""); return code; },
+      saveSettings: function (s) { Object.assign(settings, s); log("settings_update", "", JSON.stringify(s)); return settings; },
+      saveTeamMember: function (m) { var e = team.filter(function (x) { return x.email === m.email; })[0]; if (e) Object.assign(e, m); else team.push(m); log("team_update", m.email, m.role); return team; }
+    };
+  })();
+
+  /* ============ State ============ */
+  var S = { data: null, view: "overview", range: 30, q: "", fType: "", fStatus: "", fDistrict: "", sort: "submitted_at", dir: -1, open: null };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = function (v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var fmtN = function (n) { return Number(n || 0).toLocaleString("en-US"); };
+  var TYPE = { preorder: "Pre-order", enquiry: "Landlord / restaurant", dealer: "Dealer application", waitlist: "Agro / Marine waitlist", contact: "Contact message" };
+  var STATUS = { new: "New", payment_pending: "Payment pending", contacted: "Contacted", paid: "Deposit paid", refunded: "Refunded", installed: "Installed", not_interested: "Not interested" };
+  var SICON = {
+    new: '<circle cx="6" cy="6" r="4" fill="currentColor"/>', payment_pending: '<circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 1.5"/>',
+    contacted: '<path d="M2 6.5 5 9l5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>', paid: '<path d="M2 6.5 5 9l5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    installed: '<path d="M6 1.5 10.5 5v5.5h-9V5Z" fill="currentColor"/>', refunded: '<path d="M9.5 4A4 4 0 1 0 10 7.5M10 1.5V4H7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+    not_interested: '<path d="M3 6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
+  };
+  function pill(s) { return '<span class="pill s-' + esc(s) + '"><svg viewBox="0 0 12 12" aria-hidden="true">' + (SICON[s] || "") + "</svg>" + esc(STATUS[s] || s || "\u2014") + "</span>"; }
+  function when(iso) { var d = new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + " \u00B7 " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }); }
+  function ago(iso) { var h = (Date.now() - new Date(iso)) / 36e5; return h < 1 ? Math.max(1, Math.round(h * 60)) + " min ago" : h < 48 ? Math.round(h) + " h ago" : Math.round(h / 24) + " days ago"; }
+  function can(what) { var r = S.data.user.role; return { edit: ["founder", "support"], founder: ["founder"] }[what].indexOf(r) >= 0; }
+  function source(l) { return l.utm_source === "qr" ? "Dealer QR" : l.utm_source || l.heard_from || (l.referrer && l.referrer !== "direct" ? l.referrer : "Direct"); }
+  function cap(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function toast(msg) { var t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(function () { t.hidden = true; }, 2600); }
+  function inRange(l) { return !S.range || (Date.now() - new Date(l.submitted_at)) / 864e5 <= S.range; }
+
+  /* ============ Boot ============ */
+  function load() {
+    return api("getBootstrap").then(function (d) { S.data = d; renderMe(); render(); })
+      .catch(function (e) { $("#main").innerHTML = '<div class="banner error">' + ICON.info + "<div><strong>Can't open the dashboard.</strong><br>" + esc(e) + "</div></div>"; });
+  }
+  var ICON = {
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+    down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>',
+    copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>'
+  };
+  function renderMe() {
+    var u = S.data.user;
+    $("#me").innerHTML = "<strong>" + esc(u.name || u.email) + "</strong>" + (u.name ? '<span class="muted">' + esc(u.email) + "</span><br>" : "") + '<span class="role">' + esc(u.role) + "</span>";
+    var nNew = S.data.leads.filter(function (l) { return l.status === "new" || l.status === "payment_pending"; }).length;
+    var c = $("#newCount"); c.hidden = !nNew; c.textContent = nNew;
+    if (!can("founder")) $('[data-view="settings"] .lbl').textContent = "Activity";
+  }
+  document.querySelectorAll(".nav button").forEach(function (b) {
+    b.addEventListener("click", function () { go(b.getAttribute("data-view")); });
+  });
+  function go(v) {
+    S.view = v;
+    document.querySelectorAll(".nav button").forEach(function (b) { b.setAttribute("aria-current", b.getAttribute("data-view") === v ? "page" : "false"); });
+    try { localStorage.setItem("vg_dash_view", v); } catch (e) {}
+    render(); window.scrollTo(0, 0);
+  }
+  try { var saved = localStorage.getItem("vg_dash_view"); if (saved) S.view = saved; } catch (e) {}
+  if (/^#(overview|leads|dealers|settings)$/.test(location.hash)) S.view = location.hash.slice(1);
+  document.querySelectorAll(".nav button").forEach(function (b) { b.setAttribute("aria-current", b.getAttribute("data-view") === S.view ? "page" : "false"); });
+
+  function render() {
+    if (!S.data) return;
+    var m = $("#main");
+    var demo = LIVE ? "" : '<div class="banner">' + ICON.info + "<div><strong>Example data.</strong> This is a demo of the VenGuard team dashboard with made-up orders. Once it's connected to your Google Sheet, it shows your real pre-orders and enquiries and every change saves to the Sheet.</div></div>";
+    m.innerHTML = demo + ({ overview: viewOverview, leads: viewLeads, dealers: viewDealers, settings: viewSettings }[S.view] || viewOverview)();
+    bind();
+  }
+
+  /* ============ Overview ============ */
+  function rangeSeg() {
+    return '<div class="seg" role="group" aria-label="Date range">' + [[7, "7 days"], [30, "30 days"], [90, "90 days"], [0, "All time"]].map(function (r) {
+      return '<button data-range="' + r[0] + '" aria-pressed="' + (S.range === r[0]) + '">' + r[1] + "</button>";
+    }).join("") + "</div>";
+  }
+  function countBy(list, fn) { var o = {}; list.forEach(function (l) { var k = fn(l); if (k) o[k] = (o[k] || 0) + 1; }); return Object.keys(o).map(function (k) { return [k, o[k]]; }).sort(function (a, b) { return b[1] - a[1]; }); }
+  function hbars(rows, max) {
+    if (!rows.length) return '<p class="muted">Nothing yet in this period.</p>';
+    var top = max || rows[0][1];
+    return '<div class="hbars">' + rows.map(function (r) {
+      return '<div class="hbar" title="' + esc(r[0]) + ": " + r[1] + '"><span class="name">' + esc(r[0]) + '</span><span class="track"><span class="fill" style="width:' + Math.max(2, (r[1] / top) * 100) + '%"></span></span><span class="v num">' + fmtN(r[1]) + "</span></div>";
+    }).join("") + "</div>";
+  }
+  function viewOverview() {
+    var all = S.data.leads, L = all.filter(inRange);
+    var pre = L.filter(function (l) { return l.form_type === "preorder"; });
+    var paid = pre.filter(function (l) { return l.payment_status === "paid" || l.status === "paid" || l.status === "installed"; });
+    var pending = pre.filter(function (l) { return l.status === "payment_pending"; });
+    var failed = pre.filter(function (l) { return l.payment_status === "failed"; });
+    var partners = L.filter(function (l) { return l.form_type === "enquiry"; });
+    var dealersApps = L.filter(function (l) { return l.form_type === "dealer"; });
+    var deposit = 500;
+    var label = S.range ? "last " + S.range + " days" : "all time";
+    var follow = all.filter(function (l) { return (l.status === "new" || l.status === "payment_pending") && (Date.now() - new Date(l.submitted_at)) / 36e5 > 24; })
+      .sort(function (a, b) { return new Date(a.submitted_at) - new Date(b.submitted_at); }).slice(0, 8);
+    var units = pre.reduce(function (s, l) { return s + (parseInt(l.units, 10) || 1); }, 0);
+
+    return '<div class="topline"><div><h1>Overview</h1><div class="sub">' + fmtN(L.length) + " submissions, " + label + '</div></div><div class="actions">' + rangeSeg() + '<button class="btn" data-act="reload">' + ICON.refresh + "Refresh</button></div></div>" +
+      '<div class="kpis">' +
+      kpi("Deposits paid", fmtN(paid.length), "BDT " + fmtN(paid.length * deposit) + " collected", true) +
+      kpi("Pre-orders", fmtN(pre.length), fmtN(units) + " kitchens / units") +
+      kpi("Awaiting payment", fmtN(pending.length), fmtN(failed.length) + " with a failed payment") +
+      kpi("Paid rate", pre.length ? Math.round(100 * paid.length / pre.length) + "%" : "\u2014", "of pre-orders paid the deposit") +
+      kpi("Landlord & restaurant", fmtN(partners.length), fmtN(partners.reduce(function (s, l) { return s + (parseInt(l.units, 10) || 0); }, 0)) + " units asked about") +
+      kpi("Dealer applications", fmtN(dealersApps.length), fmtN(S.data.dealers.length) + " dealers on the list") +
+      "</div>" +
+      '<div class="grid2"><section class="panel"><h2>New submissions per day</h2>' + dailyChart(L) + "</section>" +
+      '<section class="panel"><h2>Pre-order funnel</h2>' + funnel(pre, paid) + '<p class="sub" style="margin:12px 0 0">Website visits and form starts come from Google Analytics once it is connected.</p></section></div>' +
+      '<div class="grid3">' +
+      '<section class="panel"><h2>Where they came from</h2>' + hbars(countBy(L, source).slice(0, 6)) + "</section>" +
+      '<section class="panel"><h2>Districts</h2>' + hbars(countBy(L, function (l) { return l.district; }).slice(0, 6)) + "</section>" +
+      '<section class="panel"><h2>Dealer codes</h2>' + hbars(countBy(L, function (l) { return l.dealer_code; }).slice(0, 6)) + "</section>" +
+      '<section class="panel"><h2>Submissions by type</h2>' + hbars(countBy(L, function (l) { return TYPE[l.form_type]; })) + "</section>" +
+      '<section class="panel"><h2>Pre-orders by kitchen</h2>' + hbars(countBy(pre, function (l) { return cap(l.kitchen_type); })) + "</section>" +
+      '<section class="panel followup"><h2>Needs a call</h2>' + (follow.length ? "<ul>" + follow.map(function (l) {
+        return '<li data-open="' + esc(l.order_id) + '"><span><strong>' + esc(l.name) + '</strong><br><span class="type">' + esc(TYPE[l.form_type]) + " \u00B7 " + esc(l.district) + "</span></span><span style=\"text-align:right\">" + pill(l.status) + '<br><span class="type">' + ago(l.submitted_at) + "</span></span></li>";
+      }).join("") + "</ul>" : '<p class="muted">Everyone older than a day has been contacted.</p>') + "</section>" +
+      "</div>";
+  }
+  function kpi(label, value, hint, lead) { return '<div class="kpi' + (lead ? " lead" : "") + '"><div class="label">' + esc(label) + '</div><div class="value num">' + esc(value) + '</div><div class="hint">' + esc(hint) + "</div></div>"; }
+  function funnel(pre, paid) {
+    var contacted = pre.filter(function (l) { return ["contacted", "paid", "installed"].indexOf(l.status) >= 0 || l.payment_status === "paid"; });
+    var installed = pre.filter(function (l) { return l.status === "installed"; });
+    var steps = [["Pre-order submitted", pre.length], ["Reached by the team", contacted.length], ["Deposit paid", paid.length], ["Installed", installed.length]];
+    var top = Math.max(1, steps[0][1]);
+    return '<div class="funnel">' + steps.map(function (s) {
+      return '<div class="fstep"><span>' + s[0] + '</span><span class="v num">' + fmtN(s[1]) + (s !== steps[0] && steps[0][1] ? " \u00B7 " + Math.round(100 * s[1] / steps[0][1]) + "%" : "") + '</span><span class="track"><span class="fill" style="width:' + Math.max(1, 100 * s[1] / top) + '%"></span></span></div>';
+    }).join("") + "</div>";
+  }
+  function dailyChart(L) {
+    var days = S.range || Math.max(7, Math.ceil((Date.now() - Math.min.apply(null, S.data.leads.map(function (l) { return +new Date(l.submitted_at); }))) / 864e5));
+    days = Math.min(days, 120);
+    var buckets = [], start = new Date(); start.setHours(0, 0, 0, 0); start = +start - (days - 1) * 864e5;
+    for (var i = 0; i < days; i++) buckets.push({ d: new Date(start + i * 864e5), n: 0 });
+    L.forEach(function (l) { var i = Math.floor((+new Date(l.submitted_at) - start) / 864e5); if (i >= 0 && i < days) buckets[i].n++; });
+    var max = Math.max(4, Math.max.apply(null, buckets.map(function (b) { return b.n; })));
+    var step = max <= 8 ? 2 : max <= 20 ? 5 : max <= 50 ? 10 : 20; max = Math.ceil(max / step) * step;
+    var W = 600, H = 220, padL = 28, padB = 22, padT = 8, iw = W - padL - 4, ih = H - padB - padT;
+    var bw = iw / days, gap = Math.min(2, bw * 0.25);
+    var g = "";
+    for (var y = 0; y <= max; y += step) { var yy = padT + ih - (y / max) * ih; g += '<line class="gridline" x1="' + padL + '" x2="' + W + '" y1="' + yy + '" y2="' + yy + '"/><text x="' + (padL - 6) + '" y="' + (yy + 4) + '" text-anchor="end">' + y + "</text>"; }
+    var every = Math.ceil(days / 6);
+    buckets.forEach(function (b, i) {
+      var h = (b.n / max) * ih, x = padL + i * bw, label = b.d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+      g += '<g data-tip="' + esc(label + ": " + b.n + (b.n === 1 ? " submission" : " submissions")) + '" data-x="' + (x + bw / 2) / W + '" data-y="' + (padT + ih - h) / H + '"><rect class="hit" x="' + x + '" y="' + padT + '" width="' + bw + '" height="' + ih + '"/>' +
+        (b.n ? '<path class="barp" d="' + barPath(x + gap / 2, padT + ih, Math.max(1, bw - gap), h) + '"/>' : "") + "</g>";
+      if (i % every === 0) g += '<text x="' + (x + bw / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + label + "</text>";
+    });
+    return '<div class="chart"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img" aria-label="Bar chart of new submissions per day">' + g + '</svg><div class="tip" id="tip"></div></div>';
+  }
+  function barPath(x, base, w, h) { var r = Math.min(4, w / 2, h); return "M" + x + "," + base + "V" + (base - h + r) + "Q" + x + "," + (base - h) + " " + (x + r) + "," + (base - h) + "H" + (x + w - r) + "Q" + (x + w) + "," + (base - h) + " " + (x + w) + "," + (base - h + r) + "V" + base + "Z"; }
+
+  /* ============ Leads ============ */
+  function filtered() {
+    var q = S.q.trim().toLowerCase().replace(/\s+/g, " ");
+    return S.data.leads.filter(function (l) {
+      if (S.fType && l.form_type !== S.fType) return false;
+      if (S.fStatus && l.status !== S.fStatus) return false;
+      if (S.fDistrict && l.district !== S.fDistrict) return false;
+      if (q) { var hay = [l.name, l.phone, l.order_id, l.area, l.district, l.organisation, l.dealer_code, l.email].join(" ").toLowerCase(); if (hay.indexOf(q) < 0) return false; }
+      return true;
+    }).sort(function (a, b) { var x = a[S.sort], y = b[S.sort]; if (S.sort === "units") { x = +x || 0; y = +y || 0; } return (x > y ? 1 : x < y ? -1 : 0) * S.dir; });
+  }
+  function opts(list, cur, all) { return '<option value="">' + all + "</option>" + list.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === cur ? " selected" : "") + ">" + esc(o[1]) + "</option>"; }).join(""); }
+  function viewLeads() {
+    var rows = filtered();
+    var districts = countBy(S.data.leads, function (l) { return l.district; }).map(function (d) { return [d[0], d[0]]; });
+    var th = function (k, label) { return '<th><button data-sort="' + k + '">' + label + (S.sort === k ? (S.dir < 0 ? " \u2193" : " \u2191") : "") + "</button></th>"; };
+    return '<div class="topline"><div><h1>Orders &amp; leads</h1><div class="sub">' + fmtN(rows.length) + " of " + fmtN(S.data.leads.length) + ' shown</div></div><div class="actions"><button class="btn" data-act="copycsv">' + ICON.copy + 'Copy as CSV</button><button class="btn primary" data-act="csv">' + ICON.down + "Export CSV</button></div></div>" +
+      '<div class="toolbar"><label class="search">' + ICON.search + '<span hidden>Search</span><input id="q" type="search" placeholder="Search name, phone, order no., area, dealer code" value="' + esc(S.q) + '"></label>' +
+      '<select class="f" id="fType" aria-label="Type">' + opts(Object.keys(TYPE).map(function (k) { return [k, TYPE[k]]; }), S.fType, "All types") + "</select>" +
+      '<select class="f" id="fStatus" aria-label="Status">' + opts(S.data.statuses.map(function (k) { return [k, STATUS[k]]; }), S.fStatus, "All statuses") + "</select>" +
+      '<select class="f" id="fDistrict" aria-label="District">' + opts(districts, S.fDistrict, "All districts") + "</select></div>" +
+      '<div class="table-wrap"><table><thead><tr>' + th("submitted_at", "Received") + th("order_id", "Order") + th("name", "Name") + "<th>Phone</th>" + th("form_type", "Type") + th("units", "Units") + th("district", "Area") + "<th>Source</th>" + th("status", "Status") + "</tr></thead><tbody>" +
+      (rows.length ? rows.slice(0, 500).map(function (l) {
+        return '<tr data-open="' + esc(l.order_id) + '" tabindex="0"><td class="num">' + when(l.submitted_at) + '</td><td class="mono">' + esc(l.order_id) + '</td><td class="name"><strong>' + esc(l.name) + "</strong>" + (l.organisation ? '<br><span class="type">' + esc(l.organisation) + "</span>" : "") + '</td><td class="num">' + esc(l.phone) + "</td><td>" + esc(TYPE[l.form_type] || l.form_type) + (l.kitchen_type ? '<br><span class="type">' + esc(cap(l.kitchen_type)) + "</span>" : "") + '</td><td class="num">' + esc(l.units) + "</td><td>" + esc(l.area) + '<br><span class="type">' + esc(l.district) + "</span></td><td>" + esc(source(l)) + (l.dealer_code ? '<br><span class="type mono">' + esc(l.dealer_code) + "</span>" : "") + "</td><td>" + pill(l.status) + "</td></tr>";
+      }).join("") : '<tr><td colspan="9" class="empty">No orders match these filters.</td></tr>') +
+      "</tbody></table></div>" + (rows.length > 500 ? '<p class="sub">Showing the first 500. Narrow the search or export to see all.</p>' : "");
+  }
+  function openLead(id) {
+    var l = S.data.leads.filter(function (x) { return x.order_id === id; })[0]; if (!l) return;
+    S.open = id;
+    var edit = can("edit");
+    var wa = "https://wa.me/88" + String(l.phone).replace(/^0/, "0");
+    var fields = [["Received", when(l.submitted_at)], ["Type", TYPE[l.form_type]], ["Kitchen", cap(l.kitchen_type)], ["Units", l.units], ["Organisation", l.organisation], ["Area", [l.area, l.district].filter(Boolean).join(", ")], ["Email", l.email], ["Cylinder", l.cylinder_brand], ["Dealer code", l.dealer_code], ["Source", source(l) + (l.utm_campaign ? " \u00B7 " + l.utm_campaign : "")], ["Language", l.lang === "en" ? "English" : "Bangla"], ["Payment", [l.payment_status, l.payment_method, l.payment_txn].filter(Boolean).join(" \u00B7 ")], ["Message", l.message]];
+    $("#drawerRoot").innerHTML = '<div class="drawer-bg" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">' +
+      '<header><div><div class="mono muted">' + esc(l.order_id) + '</div><h1 id="dTitle" style="font-size:1.35rem">' + esc(l.name) + "</h1>" + pill(l.status) + '</div><button class="x" data-act="close" aria-label="Close">\u2715</button></header>' +
+      '<div class="panel" style="padding:14px"><div style="font-size:1.25rem;font-weight:700" class="num">' + esc(l.phone) + '</div><div class="actions" style="margin-top:10px"><a class="btn primary" href="' + esc(wa) + '">WhatsApp</a><a class="btn" href="tel:' + esc(l.phone) + '" target="_top">Call</a><button class="btn" data-act="copyphone">' + ICON.copy + "Copy number</button></div></div>" +
+      '<dl class="dl">' + fields.filter(function (f) { return f[1]; }).map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("") + "</dl>" +
+      (edit ? '<form id="leadForm" class="stack"><label class="fl" for="lStatus">Status<select id="lStatus">' + S.data.statuses.map(function (s) { return '<option value="' + s + '"' + (s === l.status ? " selected" : "") + ">" + STATUS[s] + "</option>"; }).join("") + '</select></label><label class="fl" for="lNotes">Team notes<textarea id="lNotes" placeholder="e.g. Called 3 pm, will pay by bKash on Friday">' + esc(l.team_notes) + '</textarea></label><div><button class="btn primary" type="submit">Save changes</button></div></form>'
+        : (l.team_notes ? '<div><h2>Team notes</h2><p>' + esc(l.team_notes) + "</p></div>" : "") + '<p class="sub">Your role can view orders but not change them.</p>') +
+      "</aside>";
+    var f = $("#leadForm");
+    if (f) f.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var ch = { status: $("#lStatus").value, team_notes: $("#lNotes").value };
+      var b = f.querySelector("button"); b.disabled = true; b.textContent = "Saving\u2026";
+      api("updateLead", id, ch).then(function () { Object.assign(l, ch); toast("Saved " + id); closeDrawer(); renderMe(); render(); })
+        .catch(function (err) { b.disabled = false; b.textContent = "Save changes"; toast(err); });
+    });
+    var x = $(".drawer .x"); if (x) x.focus();
+  }
+  function closeDrawer() { $("#drawerRoot").innerHTML = ""; S.open = null; }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && S.open !== null) closeDrawer();
+    if (e.key === "Enter" && e.target.matches && e.target.matches("tr[data-open]")) openLead(e.target.getAttribute("data-open"));
+  });
+
+  function csv(rows) {
+    var cols = ["submitted_at", "order_id", "form_type", "status", "name", "phone", "email", "organisation", "area", "district", "kitchen_type", "units", "cylinder_brand", "dealer_code", "utm_source", "heard_from", "payment_status", "payment_method", "team_notes"];
+    return [cols.join(",")].concat(rows.map(function (r) { return cols.map(function (c) { var v = String(r[c] == null ? "" : r[c]); if (/^[=+\-@]/.test(v)) v = "'" + v; return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(","); })).join("\n");
+  }
+  function copyText(text, okMsg) {
+    var done = function () { toast(okMsg); };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+    function fallback() { var t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); done(); } catch (e) { toast("Select and copy the text manually."); } t.remove(); }
+  }
+
+  /* ============ Dealers ============ */
+  function dealerLink(code) { return (S.data.siteUrl || "") + "/?dealer=" + encodeURIComponent(code) + "&qr=shop-sticker"; }
+  function viewDealers() {
+    var stats = {};
+    S.data.leads.forEach(function (l) { if (!l.dealer_code) return; var s = stats[l.dealer_code] = stats[l.dealer_code] || { all: 0, pre: 0, paid: 0 }; s.all++; if (l.form_type === "preorder") s.pre++; if (l.payment_status === "paid" || l.status === "paid" || l.status === "installed") s.paid++; });
+    var apps = S.data.leads.filter(function (l) { return l.form_type === "dealer" && l.status !== "not_interested" && !S.data.dealers.some(function (d) { return String(d.phone) === String(l.phone); }); });
+    var founder = can("founder");
+    return '<div class="topline"><div><h1>Dealers</h1><div class="sub">Each dealer gets a code and a QR link. Orders made through it are counted here.</div></div>' + (founder ? '<button class="btn primary" data-act="newDealer">' + ICON.plus + "Add dealer</button>" : "") + "</div>" +
+      '<div class="table-wrap" style="margin-bottom:16px"><table><thead><tr><th>Code</th><th>Shop</th><th>Area</th><th>Status</th><th>Leads</th><th>Pre-orders</th><th>Paid</th><th></th></tr></thead><tbody>' +
+      (S.data.dealers.length ? S.data.dealers.map(function (d) { var s = stats[d.code] || { all: 0, pre: 0, paid: 0 };
+        return '<tr data-dealer="' + esc(d.code) + '" tabindex="0"><td class="mono"><strong>' + esc(d.code) + '</strong></td><td class="name">' + esc(d.shop_name) + '<br><span class="type">' + esc(d.owner_name) + " \u00B7 " + esc(d.phone) + "</span></td><td>" + esc(d.area) + '<br><span class="type">' + esc(d.district) + "</span></td><td>" + esc(cap(d.status)) + '</td><td class="num">' + s.all + '</td><td class="num">' + s.pre + '</td><td class="num">' + s.paid + '</td><td><button class="btn" data-act="qr" data-code="' + esc(d.code) + '">QR &amp; link</button></td></tr>';
+      }).join("") : '<tr><td colspan="8" class="empty">No dealers yet. Approve an application below or add one.</td></tr>') + "</tbody></table></div>" +
+      '<section class="panel"><h2>Dealer applications from the website</h2>' + (apps.length ? '<div class="table-wrap"><table><thead><tr><th>Received</th><th>Shop</th><th>Area</th><th>Phone</th><th></th></tr></thead><tbody>' + apps.map(function (l) {
+        return "<tr data-open=\"" + esc(l.order_id) + '"><td class="num">' + when(l.submitted_at) + '</td><td class="name"><strong>' + esc(l.organisation || "\u2014") + '</strong><br><span class="type">' + esc(l.name) + "</span></td><td>" + esc(l.area) + ", " + esc(l.district) + '</td><td class="num">' + esc(l.phone) + "</td><td>" + (founder ? '<button class="btn" data-act="approve" data-id="' + esc(l.order_id) + '">Approve as dealer</button>' : "") + "</td></tr>";
+      }).join("") + "</tbody></table></div>" : '<p class="muted">No new applications.</p>') + "</section>";
+  }
+  function suggestCode(district) {
+    var p = { Dhaka: "DH", Chattogram: "CT", Gazipur: "GZ", Narayanganj: "NG", Sylhet: "SY", Khulna: "KH", Rajshahi: "RJ", Barishal: "BR", Rangpur: "RP", Mymensingh: "MY", Cumilla: "CU", Bogura: "BG" }[district] || "VG";
+    var n = S.data.dealers.filter(function (d) { return String(d.code).indexOf(p + "-") === 0; }).map(function (d) { return parseInt(String(d.code).split("-")[1], 10) || 0; });
+    return p + "-" + String((n.length ? Math.max.apply(null, n) : 0) + 1).padStart(3, "0");
+  }
+  function dealerForm(d) {
+    d = d || {};
+    var isNew = !d.code; var code = d.code || suggestCode(d.district);
+    $("#drawerRoot").innerHTML = '<div class="drawer-bg" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dlgT"><header><h1 id="dlgT" style="font-size:1.35rem">' + (isNew ? "Add dealer" : "Edit " + esc(d.code)) + '</h1><button class="x" data-act="close" aria-label="Close">\u2715</button></header>' +
+      '<form id="dealerForm" class="stack"><div class="form-grid">' +
+      fld("code", "Dealer code", code, !isNew) + fld("status", "Status", d.status || "active", false, ["active", "trial", "paused"]) + fld("shop_name", "Shop name", d.shop_name) + fld("owner_name", "Owner", d.owner_name) + fld("phone", "Phone", d.phone) + fld("area", "Area", d.area) + fld("district", "District", d.district) + "</div>" +
+      '<label class="fl" for="d_notes">Notes<textarea id="d_notes" name="notes">' + esc(d.notes) + '</textarea></label><div><button class="btn primary" type="submit">Save dealer</button></div></form></aside>';
+    $("#dealerForm").addEventListener("submit", function (e) {
+      e.preventDefault(); var o = {}; [].forEach.call(e.target.elements, function (el) { if (el.name) o[el.name] = el.value.trim(); });
+      api("saveDealer", o).then(function (c) {
+        var ex = S.data.dealers.filter(function (x) { return x.code === c; })[0];
+        if (ex) Object.assign(ex, o, { code: c }); else S.data.dealers.push(Object.assign({ created_at: new Date().toISOString() }, o, { code: c }));
+        if (d._fromLead) { var l = S.data.leads.filter(function (x) { return x.order_id === d._fromLead; })[0]; if (l) { l.status = "contacted"; api("updateLead", l.order_id, { status: "contacted", team_notes: (l.team_notes ? l.team_notes + "\n" : "") + "Approved as dealer " + c }).catch(function () {}); } }
+        toast("Saved dealer " + c); closeDrawer(); render();
+      }).catch(function (err) { toast(err); });
+    });
+  }
+  function fld(name, label, val, ro, choices) {
+    var id = "d_" + name;
+    if (choices) return '<label class="fl" for="' + id + '">' + label + '<select id="' + id + '" name="' + name + '">' + choices.map(function (c) { return "<option" + (c === val ? " selected" : "") + ">" + c + "</option>"; }).join("") + "</select></label>";
+    return '<label class="fl" for="' + id + '">' + label + '<input id="' + id + '" name="' + name + '" value="' + esc(val) + '"' + (ro ? " readonly" : "") + (name === "code" ? ' class="mono"' : "") + "></label>";
+  }
+  function showQR(code) {
+    var link = dealerLink(code);
+    $("#drawerRoot").innerHTML = '<div class="drawer-bg" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="qrT"><header><h1 id="qrT" style="font-size:1.35rem">' + esc(code) + ' QR sticker</h1><button class="x" data-act="close" aria-label="Close">\u2715</button></header>' +
+      '<div class="qr" id="qrBox" aria-label="QR code for ' + esc(code) + '"></div><p class="sub">Print this on the counter sticker. Visitors who scan it are counted for this dealer, and the code is filled in on their pre-order form.</p>' +
+      '<label class="fl" for="qrLink">Link<input id="qrLink" class="mono" readonly value="' + esc(link) + '"></label><div class="actions"><button class="btn primary" data-act="copylink">' + ICON.copy + "Copy link</button></div></aside>";
+    if (window.QRCode) new QRCode($("#qrBox"), { text: link, width: 200, height: 200, colorDark: "#0B2A4A", colorLight: "#FFFFFF" });
+    else $("#qrBox").textContent = "QR library did not load.";
+  }
+
+  /* ============ Settings & team ============ */
+  function viewSettings() {
+    var founder = can("founder"), s = S.data.settings || {};
+    var open = !(s.preorder_open === false || s.preorder_open === "FALSE" || s.preorder_open === "false");
+    var log = '<section class="panel log"><h2>Activity</h2>' + (S.data.activity.length ? "<ul>" + S.data.activity.slice(0, 100).map(function (a) {
+      return '<li><span class="num muted">' + when(a.time) + "</span><span><strong>" + esc(a.user) + "</strong> " + esc(String(a.action).replace(/_/g, " ")) + " " + (a.ref ? '<span class="mono">' + esc(a.ref) + "</span> " : "") + '<span class="muted">' + esc(a.detail) + "</span></span></li>";
+    }).join("") + "</ul>" : '<p class="muted">No changes yet.</p>') + "</section>";
+    if (!founder) return '<div class="topline"><h1>Activity</h1></div>' + log;
+    return '<div class="topline"><div><h1>Settings &amp; team</h1><div class="sub">Changes here reach the website within a minute.</div></div></div>' +
+      '<div class="grid2"><section class="panel"><h2>Website</h2><form id="setForm" class="stack">' +
+      '<div class="switch"><input type="checkbox" id="sOpen" role="switch"' + (open ? " checked" : "") + '><label for="sOpen"><strong>Pre-orders open</strong><br><span class="sub">When off, every Pre-order button becomes \u201CGet notified\u201D.</span></label></div>' +
+      '<label class="fl" for="sPrice">Kit price shown on the site (BDT)<input id="sPrice" inputmode="numeric" placeholder="Leave empty for \u201CFinal price to be announced\u201D" value="' + esc(s.kit_price_bdt) + '"></label>' +
+      '<label class="fl" for="sNoticeBn">Notice bar, Bangla<input id="sNoticeBn" lang="bn" placeholder="\u09AF\u09C7\u09AE\u09A8: \u0988\u09A6\u09C7\u09B0 \u099B\u09C1\u099F\u09BF\u09A4\u09C7 \u09A1\u09C7\u09B2\u09BF\u09AD\u09BE\u09B0\u09BF \u09AC\u09A8\u09CD\u09A7 \u09A5\u09BE\u0995\u09AC\u09C7" value="' + esc(s.notice_bn) + '"></label>' +
+      '<label class="fl" for="sNoticeEn">Notice bar, English<input id="sNoticeEn" placeholder="e.g. Deliveries pause for Eid" value="' + esc(s.notice_en) + '"></label>' +
+      '<div><button class="btn primary" type="submit">Save website settings</button></div></form></section>' +
+      '<section class="panel"><h2>Team</h2><div class="table-wrap" style="margin-bottom:12px"><table><thead><tr><th>Person</th><th>Role</th><th></th></tr></thead><tbody>' + S.data.team.map(function (m) {
+        return "<tr><td class=\"name\"><strong>" + esc(m.name || m.email) + '</strong><br><span class="type">' + esc(m.email) + "</span></td><td>" + esc(cap(m.role)) + (m.active === false || m.active === "FALSE" ? " (removed)" : "") + "</td><td>" + (m.email !== S.data.user.email ? '<button class="btn" data-act="rmTeam" data-email="' + esc(m.email) + '">Remove</button>' : '<span class="type">You</span>') + "</td></tr>";
+      }).join("") + "</tbody></table></div>" +
+      '<form id="teamForm" class="stack"><div class="form-grid"><label class="fl" for="tEmail">Google account email<input id="tEmail" type="email" required placeholder="name@company.com"></label><label class="fl" for="tName">Name<input id="tName"></label></div><label class="fl" for="tRole">Role<select id="tRole"><option value="support">Support: update orders and notes</option><option value="marketing">Marketing: view and export only</option><option value="founder">Founder: everything</option></select></label><div><button class="btn" type="submit">' + ICON.plus + "Add to team</button></div><p class=\"sub\" style=\"margin:0\">They'll also get access to the VenGuard Leads Sheet. Ask everyone to switch on 2-step verification in their Google account.</p></form></section></div>" + log;
+  }
+
+  /* ============ Events ============ */
+  function bind() {
+    var q = $("#q");
+    if (q) q.addEventListener("input", function () { S.q = q.value; var pos = q.selectionStart; render(); var n = $("#q"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} });
+    ["fType", "fStatus", "fDistrict"].forEach(function (k) { var el = $("#" + k); if (el) el.addEventListener("change", function () { S[k] = el.value; render(); }); });
+    var tip = $("#tip");
+    if (tip) document.querySelectorAll(".chart g[data-tip]").forEach(function (g) {
+      g.addEventListener("mouseenter", function () { tip.textContent = g.getAttribute("data-tip"); tip.style.left = (g.getAttribute("data-x") * 100) + "%"; tip.style.top = (g.getAttribute("data-y") * 100) + "%"; tip.classList.add("on"); });
+      g.addEventListener("mouseleave", function () { tip.classList.remove("on"); });
+    });
+    var sf = $("#setForm");
+    if (sf) sf.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var s = { preorder_open: $("#sOpen").checked, kit_price_bdt: $("#sPrice").value.replace(/\D/g, ""), notice_bn: $("#sNoticeBn").value.trim(), notice_en: $("#sNoticeEn").value.trim() };
+      api("saveSettings", s).then(function (r) { S.data.settings = r; toast("Website settings saved"); render(); }).catch(toast);
+    });
+    var tf = $("#teamForm");
+    if (tf) tf.addEventListener("submit", function (e) {
+      e.preventDefault();
+      api("saveTeamMember", { email: $("#tEmail").value.trim().toLowerCase(), name: $("#tName").value.trim(), role: $("#tRole").value, active: true })
+        .then(function (t) { S.data.team = t; toast("Added to the team"); render(); }).catch(toast);
+    });
+  }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-act],[data-open],[data-range],[data-sort],tr[data-dealer]"); if (!t) return;
+    if (t.hasAttribute("data-range")) { S.range = +t.getAttribute("data-range"); render(); return; }
+    if (t.hasAttribute("data-sort")) { var k = t.getAttribute("data-sort"); S.dir = S.sort === k ? -S.dir : -1; S.sort = k; render(); return; }
+    var act = t.getAttribute("data-act");
+    if (!act && t.hasAttribute("data-open")) { openLead(t.getAttribute("data-open")); return; }
+    if (!act && t.hasAttribute("data-dealer")) { if (can("founder")) dealerForm(S.data.dealers.filter(function (d) { return d.code === t.getAttribute("data-dealer"); })[0]); return; }
+    e.stopPropagation();
+    if (act === "close") closeDrawer();
+    else if (act === "reload") { toast("Refreshing\u2026"); load(); }
+    else if (act === "csv") {
+      var blob = new Blob(["\uFEFF" + csv(filtered())], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = "venguard-leads-" + new Date().toISOString().slice(0, 10) + ".csv"; a.target = "_self"; document.body.appendChild(a); a.click(); a.remove();
+      toast("CSV downloaded. If nothing appeared, use Copy as CSV.");
+    }
+    else if (act === "copycsv") copyText(csv(filtered()), "CSV copied. Paste it into a spreadsheet.");
+    else if (act === "copyphone") copyText($(".drawer .num").textContent, "Number copied");
+    else if (act === "copylink") copyText($("#qrLink").value, "Link copied");
+    else if (act === "newDealer") dealerForm();
+    else if (act === "qr") showQR(t.getAttribute("data-code"));
+    else if (act === "approve") {
+      var l = S.data.leads.filter(function (x) { return x.order_id === t.getAttribute("data-id"); })[0];
+      dealerForm({ shop_name: l.organisation, owner_name: l.name, phone: l.phone, area: l.area, district: l.district, status: "trial", _fromLead: l.order_id, code: "" });
+      $("#d_code").value = suggestCode(l.district); $("#d_code").removeAttribute("readonly");
+    }
+    else if (act === "rmTeam") {
+      var m = S.data.team.filter(function (x) { return x.email === t.getAttribute("data-email"); })[0];
+      if (t.getAttribute("data-confirm") !== "1") { t.setAttribute("data-confirm", "1"); t.textContent = "Confirm remove"; return; }
+      api("saveTeamMember", Object.assign({}, m, { active: false })).then(function (tm) { S.data.team = tm; toast("Removed " + m.email); render(); }).catch(toast);
+    }
+  });
+
+  load();
+})();
+</script>

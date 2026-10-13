@@ -49,6 +49,7 @@ function doPost(e) {
     var phone = String(data.phone || '').replace(/\D/g, '').replace(/^880/, '0');
     if (!/^01[3-9]\d{8}$/.test(phone)) return json({ ok: false, error: 'bad phone' });
     if (data.consent !== 'yes') return json({ ok: false, error: 'no consent' });
+    if (data.form_type === 'preorder' && preordersClosed()) return json({ ok: false, error: 'preorders closed' });
     data.phone = phone;
     if (isDuplicate(phone, data.form_type)) return json({ ok: true, order_id: data.order_id, duplicate: true });
 
@@ -72,7 +73,23 @@ function doPost(e) {
   }
 }
 
-function doGet() { return json({ ok: true, service: 'venguard-leads' }); }
+/** Public, non-personal settings the website reads on load (set from the dashboard's Settings tab). */
+function doGet(e) {
+  if (e && e.parameter && e.parameter.settings !== undefined) {
+    var out = { ok: true }, sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Settings');
+    if (sh && sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues().forEach(function (r) {
+      if (['preorder_open', 'kit_price_bdt', 'notice_bn', 'notice_en'].indexOf(r[0]) >= 0) out[r[0]] = r[1];
+    });
+    return json(out);
+  }
+  return json({ ok: true, service: 'venguard-leads' });
+}
+
+function preordersClosed() {
+  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Settings');
+  if (!sh || sh.getLastRow() < 2) return false;
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues().some(function (r) { return r[0] === 'preorder_open' && String(r[1]).toUpperCase() === 'FALSE'; });
+}
 
 function json(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 

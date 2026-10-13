@@ -1,0 +1,36 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "devices": {
+      "$id": {
+        "cmd": {
+          ".read": "auth != null && auth.uid === 'dev_' + $id",
+          ".write": false
+        },
+        "ack": {
+          "$cid": {
+            ".write": "auth != null && auth.uid === 'dev_' + $id && !data.exists() && root.child('devices').child($id).child('cmd').child($cid).exists()",
+            ".validate": "newData.hasChildren(['result']) && newData.child('result').isString() && newData.child('result').val().matches(/^(closed|already_closed|failed)$/)"
+          }
+        },
+        "state": {
+          ".write": "auth != null && auth.uid === 'dev_' + $id",
+          ".validate": "newData.hasChildren(['valve', 'gasLEL', 'alarm']) && newData.child('valve').val().matches(/^(open|closed)$/) && newData.child('gasLEL').isNumber() && newData.child('alarm').isBoolean()"
+        },
+        "events": {
+          "$eid": {
+            ".write": "auth != null && auth.uid === 'dev_' + $id && !data.exists()",
+            ".validate": "newData.child('type').isString() && newData.child('type').val().matches(/^(test|battery_low|tamper)$/)"
+          }
+        }
+      }
+    },
+    "hb": {
+      "$id": {
+        ".write": "auth != null && auth.uid === 'dev_' + $id",
+        ".validate": "newData.val() === now"
+      }
+    }
+  }
+}

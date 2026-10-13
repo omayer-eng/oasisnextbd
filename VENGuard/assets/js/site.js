@@ -105,9 +105,49 @@
     /* ---------- Funnel step: how-it-works read ---------- */
     if (document.body.getAttribute("data-page") === "how-it-works") track("funnel_how_it_works");
 
+    applyLiveSettings();
     $$("form[data-vg-form]").forEach(setupForm);
     setupThankYou();
   });
+
+  /* ================= Live settings from the team dashboard =================
+     Pre-order on/off, kit price and a notice bar. Cached for 10 minutes so
+     pages stay fast; the static page is always complete without it. */
+  function applyLiveSettings() {
+    var url = CFG.endpoints && CFG.endpoints.leads;
+    if (!url) return;
+    var cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem("vg_settings") || "null"); } catch (e) {}
+    if (cached && Date.now() - cached.t < 6e5) return apply(cached.s);
+    fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "settings=1").then(function (r) { return r.json(); }).then(function (s) {
+      try { sessionStorage.setItem("vg_settings", JSON.stringify({ t: Date.now(), s: s })); } catch (e) {}
+      apply(s);
+    }).catch(function () {});
+    function apply(s) {
+      if (!s || !s.ok) return;
+      var lang = document.documentElement.lang;
+      if (String(s.preorder_open).toLowerCase() === "false") {
+        var contact = ($(".nav a[href$='about/']") || {}).href ? $(".nav a[href$='about/']").href.replace(/about\/$/, "contact/") : "contact/";
+        $$("[data-track='cta_preorder_click']").forEach(function (a) {
+          a.textContent = lang === "bn" ? "আপডেট পেতে যোগাযোগ করুন" : "Get notified";
+          a.setAttribute("href", contact); a.setAttribute("data-track", "cta_waitlist_click");
+        });
+        var form = $("form[data-vg-form='preorder']");
+        if (form) form.outerHTML = '<div class="notice"><p class="mt-0">' + (lang === "bn" ? "প্রি-অর্ডার এই মুহূর্তে বন্ধ আছে। আপডেট পেতে যোগাযোগ করুন।" : "Pre-orders are paused right now. Contact us to be notified.") + ' <a href="' + contact + '">' + (lang === "bn" ? "যোগাযোগ" : "Contact") + "</a></p></div>";
+      }
+      var price = parseInt(s.kit_price_bdt, 10);
+      if (price > 0) $$("[data-setting='kit_price']").forEach(function (el) {
+        el.textContent = lang === "bn" ? "৳" + String(price.toLocaleString("en-US")).replace(/[0-9]/g, function (d) { return "০১২৩৪৫৬৭৮৯"[d]; }) : "BDT " + price.toLocaleString("en-US");
+      });
+      var note = lang === "bn" ? s.notice_bn : s.notice_en;
+      if (note) {
+        var bar = document.createElement("div");
+        bar.className = "site-notice"; bar.setAttribute("role", "status");
+        bar.innerHTML = '<div class="wrap"></div>'; bar.firstChild.textContent = note;
+        var header = $(".site-header"); if (header) header.parentNode.insertBefore(bar, header.nextSibling);
+      }
+    }
+  }
 
   /* ================= Forms ================= */
   var BN = "০১২৩৪৫৬৭৮৯";

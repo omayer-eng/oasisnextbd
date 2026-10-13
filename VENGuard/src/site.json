@@ -1,9 +1,7 @@
 {
   "_readme": "Site-wide settings. Edit this file, run `python3 src/build.py`, commit. Every value here appears on the site. See README.md.",
-
   "brand": "VenGuard",
   "base_url": "https://oasisnextbd.github.io/OASIS_official_website/VENGuard",
-
   "preorder": {
     "open": true,
     "deposit_bdt": 500,
@@ -12,23 +10,31 @@
     "kit_price_note_en": "Final price to be announced",
     "connected_plan_bdt_per_year": 550
   },
-
   "claims": {
     "_readme": "Claims rule (brief Part 7). Set a claim to true ONLY when testing supports it (CTO sign-off). While false, the site says 'designed to' and shows a 'testing in progress' note.",
     "closes_under_1s_confirmed": false,
     "no_power_needed_confirmed": false,
     "no_internet_needed_confirmed": false
   },
-
   "certifications_granted": [],
-
   "status_timeline": [
-    {"key": "prototype", "state": "done"},
-    {"key": "testing", "state": "current"},
-    {"key": "certification", "state": "next"},
-    {"key": "preorders", "state": "current"}
+    {
+      "key": "prototype",
+      "state": "done"
+    },
+    {
+      "key": "testing",
+      "state": "current"
+    },
+    {
+      "key": "certification",
+      "state": "next"
+    },
+    {
+      "key": "preorders",
+      "state": "current"
+    }
   ],
-
   "contact": {
     "whatsapp_number": "8801000000000",
     "phone_display": "+880 1000-000000",
@@ -41,13 +47,11 @@
     "facebook": "https://www.facebook.com/",
     "linkedin": ""
   },
-
   "endpoints": {
     "_readme": "leads: URL of the Google Apps Script web app (backend/apps-script/Code.gs) or any server that accepts the lead JSON. Empty = forms run in demo mode and keep a copy in the browser only.",
     "leads": "",
     "payment_enabled": false
   },
-
   "tracking": {
     "_readme": "Leave an ID empty to switch that tool off. Nothing loads until the visitor accepts analytics cookies.",
     "ga4_id": "",
@@ -55,19 +59,71 @@
     "clarity_id": "",
     "search_console_verification": ""
   },
-
   "gallery": {
     "_readme": "Product showcase strip (homepage + Home kit page). type 'image': src = file name in assets/img without extension (needs .jpg and .webp). type 'video': short SILENT clip (5-10 s, H.264 MP4 under ~1.5 MB) in assets/video/ plus a poster image; it plays muted only while on screen and never on data-saver / slow connections / reduced-motion. Real kitchens, real hands, no stock footage.",
     "items": [
-      {"type": "image", "src": "kit-gray", "w": 1100, "h": 767, "caption_bn": "পুরো হোম কিট", "caption_en": "The complete Home kit"},
-      {"type": "image", "src": "detail-detector", "w": 640, "h": 800, "caption_bn": "ডিটেক্টর: অবস্থা জানাতে আলো", "caption_en": "The detector, with status lights"},
-      {"type": "image", "src": "detail-valve", "w": 640, "h": 800, "caption_bn": "স্বয়ংক্রিয় ভালভ", "caption_en": "The automatic valve"},
-      {"type": "image", "src": "valve", "w": 900, "h": 565, "caption_bn": "কাছ থেকে ভালভ", "caption_en": "The valve, up close"},
-      {"type": "image", "src": "kit-skin-sm", "w": 640, "h": 446, "caption_bn": "রঙের বিকল্প নিয়ে কাজ চলছে", "caption_en": "Colour options being explored"},
-      {"type": "image", "src": "kit-maroon-sm", "w": 640, "h": 447, "caption_bn": "রঙের বিকল্প নিয়ে কাজ চলছে", "caption_en": "Colour options being explored"}
+      {
+        "type": "image",
+        "src": "kit-gray",
+        "w": 1100,
+        "h": 767,
+        "caption_bn": "পুরো হোম কিট",
+        "caption_en": "The complete Home kit"
+      },
+      {
+        "type": "image",
+        "src": "detail-detector",
+        "w": 640,
+        "h": 800,
+        "caption_bn": "ডিটেক্টর: অবস্থা জানাতে আলো",
+        "caption_en": "The detector, with status lights"
+      },
+      {
+        "type": "image",
+        "src": "detail-valve",
+        "w": 640,
+        "h": 800,
+        "caption_bn": "স্বয়ংক্রিয় ভালভ",
+        "caption_en": "The automatic valve"
+      },
+      {
+        "type": "image",
+        "src": "valve",
+        "w": 900,
+        "h": 565,
+        "caption_bn": "কাছ থেকে ভালভ",
+        "caption_en": "The valve, up close"
+      },
+      {
+        "type": "image",
+        "src": "kit-skin-sm",
+        "w": 640,
+        "h": 446,
+        "caption_bn": "রঙের বিকল্প নিয়ে কাজ চলছে",
+        "caption_en": "Colour options being explored"
+      },
+      {
+        "type": "image",
+        "src": "kit-maroon-sm",
+        "w": 640,
+        "h": 447,
+        "caption_bn": "রঙের বিকল্প নিয়ে কাজ চলছে",
+        "caption_en": "Colour options being explored"
+      }
     ],
-    "_video_example": {"type": "video", "src": "assets/video/valve-closing.mp4", "poster": "valve", "w": 900, "h": 565, "caption_bn": "ভালভ নিজেই বন্ধ হচ্ছে", "caption_en": "The valve closing by itself"}
+    "_video_example": {
+      "type": "video",
+      "src": "assets/video/valve-closing.mp4",
+      "poster": "valve",
+      "w": 900,
+      "h": 565,
+      "caption_bn": "ভালভ নিজেই বন্ধ হচ্ছে",
+      "caption_en": "The valve closing by itself"
+    }
   },
-
-  "testimonials": []
+  "testimonials": [],
+  "connected": {
+    "_readme": "Customer app (VENGuard/app/). firebase: paste the Firebase web config object from backend/connected/README.md step 3. Empty = the app runs as a demo with example data.",
+    "firebase": null
+  }
 }

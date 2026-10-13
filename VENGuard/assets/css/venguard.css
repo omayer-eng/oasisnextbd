@@ -385,3 +385,6 @@ html[lang="bn"] .hero--center h1 { max-width: 18ch; }
 .check span { font-weight: 400; color: var(--ink); }
 .steps svg.diagram { width: 100%; height: auto; max-width: 420px; margin: 0 auto; display: block; }
 .page-head + .section { padding-top: 40px; }
+
+/* Notice bar set from the team dashboard (calm, never red) */
+.site-notice { background: var(--navy); color: #fff; font-size: .95rem; padding: 10px 0; }

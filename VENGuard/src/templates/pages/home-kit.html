@@ -65,7 +65,7 @@
     <div class="grid grid--2">
       <div class="card">
         <span class="tag tag--teal">{{ t("কোর সেফটি", "Core Safety") }}</span>
-        <p class="price">{% if site.preorder.kit_price_bdt %}{{ t("৳" ~ num(site.preorder.kit_price_bdt), "BDT " ~ num(site.preorder.kit_price_bdt)) }}{% else %}{{ t(site.preorder.kit_price_note_bn, site.preorder.kit_price_note_en) }}{% endif %}</p>
+        <p class="price" data-setting="kit_price">{% if site.preorder.kit_price_bdt %}{{ t("৳" ~ num(site.preorder.kit_price_bdt), "BDT " ~ num(site.preorder.kit_price_bdt)) }}{% else %}{{ t(site.preorder.kit_price_note_bn, site.preorder.kit_price_note_en) }}{% endif %}</p>
         <p>{{ t("একবার কিনলেই। অফলাইনে কাজ করার জন্য তৈরি। কখনো পেওয়ালের পেছনে নয়।", "One-time purchase. Designed to work offline. Never paywalled.") }}</p>
         <p class="small muted">{{ t("এখন ৳" ~ num(site.preorder.deposit_bdt) ~ " ফেরতযোগ্য জামানতে প্রি-অর্ডার।", "Pre-order now with a BDT " ~ num(site.preorder.deposit_bdt) ~ " refundable deposit.") }}</p>
         {{ preorder_btn(t, url, site, "product_price") }}

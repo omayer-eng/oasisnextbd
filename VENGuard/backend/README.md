@@ -1,5 +1,7 @@
 # VenGuard leads backend (Google Sheet + Apps Script)
 
+> The team dashboard web app is in [`dashboard/`](dashboard/README.md). Set this backend up first.
+
 This is the company-owned database for every pre-order and enquiry (brief 8.3). It costs nothing,
 takes about 20 minutes to set up, and the founders own it from day one.
 
@@ -22,7 +24,9 @@ takes about 20 minutes to set up, and the founders own it from day one.
 6. In Apps Script run `setupWeeklyTrigger` once (accept the permissions prompt).
 7. Optional for the weekly visits number: **Services → + → Google Analytics Data API**.
 
-## Daily use (the interim admin panel)
+## Daily use
+
+Use the **team dashboard** (`dashboard/`) for day-to-day work. The Sheet underneath stays usable directly:
 
 - Every lead is one row. Use **Data → Create a filter** to search and filter.
 - Change the `status` dropdown: `contacted`, `paid`, `refunded`, `installed`, …

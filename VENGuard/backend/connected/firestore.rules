@@ -1,0 +1,37 @@
+rules_version = '2';
+// VenGuard Connected. Customers can READ only their own sites, devices, events and commands.
+// Every WRITE that matters (close commands, contacts, plans, device state) goes through Cloud Functions,
+// which check membership and the Connected plan. Nobody can write a command directly.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'lang', 'fcmTokens'])
+        && (!('name' in request.resource.data) || request.resource.data.name is string && request.resource.data.name.size() <= 60);
+    }
+
+    match /sites/{siteId} {
+      allow read: if signedIn() && request.auth.uid in resource.data.memberUids;
+      allow write: if false;
+      match /events/{eventId} {
+        allow read: if signedIn() && request.auth.uid in get(/databases/$(database)/documents/sites/$(siteId)).data.memberUids;
+        allow write: if false;
+      }
+      match /alertLog/{x} { allow read, write: if false; }
+    }
+
+    match /devices/{deviceId} {
+      allow read: if signedIn() && request.auth.uid in resource.data.memberUids;
+      allow write: if false;
+      match /commands/{commandId} {
+        allow read: if signedIn() && request.auth.uid in get(/databases/$(database)/documents/devices/$(deviceId)).data.memberUids;
+        allow write: if false;
+      }
+    }
+
+    match /payments/{id} { allow read, write: if false; }
+  }
+}

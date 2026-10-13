@@ -1,0 +1,13 @@
+{
+  "name": "VenGuard Connected",
+  "short_name": "VenGuard",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EAF2F6",
+  "theme_color": "#0B2A4A",
+  "lang": "bn",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
