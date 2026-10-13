@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% set page_title = t("ধন্যবাদ — আপনার প্রি-অর্ডার | VenGuard", "Thank you — your pre-order | VenGuard") %}
+{% set page_desc = t("আপনার VenGuard প্রি-অর্ডারের নিশ্চিতকরণ।", "Confirmation of your VenGuard pre-order.") %}
+{% block content %}
+<section class="section">
+  <div class="wrap prose" data-thank-you>
+    {{ icon("check", "", 56, "color:#0A7F76") }}
+    <h1 class="mt-1" data-state="paid">{{ t("ধন্যবাদ! আপনার VenGuard রিজার্ভ হয়েছে।", "Thank you! Your VenGuard is reserved.") }}</h1>
+    <h1 class="mt-1" data-state="pending" hidden>{{ t("ধন্যবাদ! আপনার তথ্য আমরা পেয়েছি।", "Thank you! We have your details.") }}</h1>
+    <h1 class="mt-1" data-state="failed" hidden>{{ t("পেমেন্ট সম্পূর্ণ হয়নি, তবে আপনার তথ্য সংরক্ষিত আছে।", "The payment did not go through, but your details are saved.") }}</h1>
+    <p class="lead">{{ t("অর্ডার নম্বর:", "Order number:") }} <strong data-order-id>—</strong></p>
+    <div data-state="paid">
+      <p>{{ t("আপনার ফোনে বাংলায় SMS/WhatsApp এবং ইমেইল দিলে ইমেইলে নিশ্চিতকরণ যাবে।", "A confirmation is on its way by SMS/WhatsApp in Bangla, and by email if you gave one.") }}</p>
+    </div>
+    <div data-state="pending" hidden>
+      <p>{{ t("আমাদের দল শীঘ্রই আপনাকে ফোন করে bKash, Nagad বা কার্ডে ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত দেওয়ার নিয়ম জানাবে।", "Our team will call you soon to help you pay the BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit by bKash, Nagad or card.") }}</p>
+    </div>
+    <div data-state="failed" hidden>
+      <p>{{ t("চিন্তা করবেন না, আপনার কোনো টাকা কাটা হলে তা ফেরত যাবে। আমরা ফোন করে সাহায্য করব, অথবা আবার চেষ্টা করুন।", "Do not worry: if any money was taken it will be returned. We will call to help, or you can try again.") }}</p>
+      <p><a class="btn btn--primary" href="{{ url('pre-order') }}" data-track="payment_retry_click">{{ t("আবার চেষ্টা করুন", "Try again") }}</a></p>
+    </div>
+    <h2>{{ t("এরপর কী হবে", "What happens next") }}</h2>
+    <ol>
+      <li>{{ t("আমাদের দল ১–২ কর্মদিবসের মধ্যে ফোন করবে।", "Our team calls you within 1–2 working days.") }}</li>
+      <li>{{ t("পরীক্ষা ও সার্টিফিকেশনের অগ্রগতি আমরা আপনাকে জানাতে থাকব।", "We keep you updated on testing and certification.") }}</li>
+      <li>{{ t("ডেলিভারির তারিখ ঠিক হলে সবার আগে আপনি জানবেন।", "You hear first when delivery dates are set.") }}</li>
+    </ol>
+    <p>{{ t("প্রশ্ন আছে?", "Questions?") }} <a href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="thank_you">{{ t("WhatsApp-এ লিখুন", "Message us on WhatsApp") }}</a> · <a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></p>
+  </div>
+</section>
+{% endblock %}

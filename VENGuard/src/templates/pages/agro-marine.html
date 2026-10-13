@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% import "partials/forms.html" as f %}
+{% set page_title = t("VenGuard এগ্রো ও মেরিন — শীঘ্রই আসছে", "VenGuard Agro and Marine — coming soon") %}
+{% set page_desc = t("পোল্ট্রি খামার ও নৌযানের জন্য VenGuard শীঘ্রই আসছে। অপেক্ষার তালিকায় নাম লেখান।", "VenGuard for poultry farms and vessels is coming soon. Join the waitlist.") %}
+{% block content %}
+{{ f.page_head(t, url, "এগ্রো ও মেরিন", "Agro and Marine", "পোল্ট্রি খামার ও নৌযানের জন্য VenGuard তৈরি হচ্ছে। প্রস্তুত হলে সবার আগে জানতে নাম লেখান।", "We are developing VenGuard for poultry farms and vessels. Join the waitlist to hear first.") }}
+<section class="section">
+  <div class="wrap">
+    <div class="grid grid--2">
+      <div class="card card--mist">{{ icon("agro", "icon") }}<h3>{{ t("VenGuard এগ্রো", "VenGuard Agro") }}</h3><p class="muted mt-0">{{ t("গ্যাস ব্রুডার ব্যবহারকারী পোল্ট্রি খামারের জন্য।", "For poultry farms that use gas brooders.") }}</p><span class="tag">{{ t("শীঘ্রই আসছে", "Coming soon") }}</span></div>
+      <div class="card card--mist">{{ icon("marine", "icon") }}<h3>{{ t("VenGuard মেরিন", "VenGuard Marine") }}</h3><p class="muted mt-0">{{ t("লঞ্চ, ট্রলার ও নৌযানের রান্নাঘরের জন্য।", "For galleys on launches, trawlers and other vessels.") }}</p><span class="tag">{{ t("শীঘ্রই আসছে", "Coming soon") }}</span></div>
+    </div>
+    <h2 class="mt-3">{{ t("অপেক্ষার তালিকা", "Join the waitlist") }}</h2>
+    <form class="form" data-vg-form="waitlist" novalidate {{ f.thanks_messages(t) }}>
+      {{ f.hidden(t) }}
+      {{ f.choices(t, "kitchen_type", "কোনটিতে আগ্রহী?", "Interested in", [("agro", t("এগ্রো (পোল্ট্রি)", "Agro (poultry)")), ("marine", t("মেরিন (নৌযান)", "Marine (vessels)"))], true) }}
+      <div class="form-grid form-grid--2">
+        {{ f.field(t, "name", "আপনার নাম", "Your name", "text", true, "name") }}
+        {{ f.phone(t) }}
+      </div>
+      <div class="form-grid form-grid--2">
+        {{ f.field(t, "area", "এলাকা", "Area", "text", true, "address-level3") }}
+        {{ f.districts(t) }}
+      </div>
+      {{ f.field(t, "units", "খামার শেড বা নৌযানের সংখ্যা", "Number of sheds or vessels", "number", false, "", inputmode="numeric", attrs='min="0" data-validate="units-optional" data-msg-invalid="' ~ t("একটি সঠিক সংখ্যা লিখুন।", "Please enter a valid number.") ~ '"') }}
+      {{ f.consent(t, url) }}
+      {{ f.status() }}
+      {{ f.submit(t, "তালিকায় নাম লেখান", "Join the waitlist") }}
+    </form>
+  </div>
+</section>
+{% endblock %}

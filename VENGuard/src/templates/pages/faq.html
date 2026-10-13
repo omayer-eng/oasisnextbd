@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "partials/forms.html" as f %}
+{% set page_title = t("সাধারণ প্রশ্ন — VenGuard", "Frequently asked questions — VenGuard") %}
+{% set page_desc = t("লোডশেডিং, Wi-Fi, নিজে বসানো, দাম, জামানত ফেরত, সিলিন্ডার — VenGuard নিয়ে সাধারণ প্রশ্নের সহজ উত্তর।", "Blackouts, Wi-Fi, installing it yourself, price, deposit refunds, cylinders — plain answers about VenGuard.") %}
+{% block content %}
+{{ f.page_head(t, url, "সাধারণ প্রশ্ন", "Frequently asked questions") }}
+<section class="section">
+  <div class="wrap">
+    {% set faq_limit = 99 %}
+    {% include "partials/faq-list.html" %}
+    <div class="notice mt-3">
+      <p class="mt-0">{{ t("আপনার প্রশ্নের উত্তর পাননি?", "Did not find your answer?") }} <a href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="faq">{{ t("WhatsApp-এ জিজ্ঞেস করুন", "Ask us on WhatsApp") }}</a> {{ t("অথবা", "or") }} <a href="{{ url('contact') }}">{{ t("যোগাযোগ করুন", "contact us") }}</a>.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

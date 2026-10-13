@@ -226,6 +226,9 @@
     :root[data-theme="light"] .btn-glow span {
       color: #ffffff !important;
     }
+    :root[data-theme="light"] #hero {
+  padding-top: 120px !important;
+}
     html { scroll-behavior: smooth; }
 
     body {
@@ -274,7 +277,15 @@
       letter-spacing: 0.05em;
     }
     .nav-logo svg { flex-shrink: 0; }
-
+    .nav-logo img {
+  display: block;
+  height: 130px !important;
+  width: auto;
+  transition: opacity 0.2s ease-in-out;
+}
+.nav-logo:hover img {
+  opacity: 0.85;
+}
     .nav-links {
       display: flex;
       align-items: center;
@@ -1124,26 +1135,57 @@
       .tech-arrow { display: none; }
     }
 
-    @media (max-width: 900px) {
-      .feature-grid { grid-template-columns: 1fr 1fr; }
-      .industrial-grid { grid-template-columns: 1fr; }
-      .rd-grid { grid-template-columns: 1fr; }
-      .partners-grid { grid-template-columns: 1fr; max-width: 400px; }
-      .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
-      .tech-columns {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
-      .tech-arrow { display: none; }
-    }
+    @media (max-width: 991px) {
+  nav {
+    height: 80px !important;
+    padding: 0 1.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  /* Centers the logo anchor container and structural element on mobile */
+  .nav-logo {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important; /* Pushes the logo perfectly to the horizontal center */
+    padding-left: 40px; /* Counter-balances the hamburger menu spacing so the logo centers exactly */
+  }
+  .nav-logo img {
+    height: 55px !important;
+    width: auto !important;
+  }
+  /* Safely hides clunky desktop text elements and menu targets */
+  .nav-links, .nav-cta { 
+    display: none !important; 
+  }
 
-    @media (max-width: 768px) {
-      .nav-links, .nav-cta { display: none; }
-      .hamburger { display: flex; }
-      section { padding: 70px 1.2rem; }
-      .feature-grid { grid-template-columns: 1fr; }
-      .gauges-row { gap: 0.5rem; }
-    }
+  /* Forces the 3-line interactive action hamburger icon to display */
+  .hamburger { 
+    display: flex !important;
+    order: 2; /* Keeps the hamburger menu pinned cleanly to the right side */
+  }
+}
+
+/* 2. LAYOUT GRID REARRANGEMENT (Starts at 900px down) */
+@media (max-width: 900px) {
+  .feature-grid { grid-template-columns: 1fr 1fr; }
+  .industrial-grid { grid-template-columns: 1fr; }
+  .rd-grid { grid-template-columns: 1fr; }
+  .partners-grid { grid-template-columns: 1fr; max-width: 400px; }
+  .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .tech-columns {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .tech-arrow { display: none; }
+}
+
+/* 3. ULTRA-SMALL SMARTPHONE VIEW (Starts at 768px down) */
+@media (max-width: 768px) {
+  section { padding: 70px 1.2rem; }
+  .gauges-row { gap: 0.5rem; }
+}
 
     /* Notification toast */
     .toast {
@@ -1167,34 +1209,34 @@
   </style>
 </head>
 <body>
-
 <!-- ===== NAVIGATION ===== -->
-<nav id="navbar">
-  <a href="#hero" class="nav-logo">
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="#00d4aa" stroke-width="1.5" fill="none"/>
-      <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" stroke="#00e5ff" stroke-width="1" fill="rgba(0,212,170,0.08)"/>
-      <circle cx="14" cy="14" r="2.5" fill="#00d4aa"/>
-      <line x1="14" y1="7" x2="14" y2="11" stroke="#00d4aa" stroke-width="1"/>
-      <line x1="14" y1="17" x2="14" y2="21" stroke="#00d4aa" stroke-width="1"/>
-      <line x1="7" y1="11" x2="10.5" y2="13" stroke="#00d4aa" stroke-width="1"/>
-      <line x1="17.5" y1="15" x2="21" y2="17" stroke="#00d4aa" stroke-width="1"/>
-    </svg>
-    OASIS
+<nav id="navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease; width: 100%;">
+  
+  <!-- Empty placeholder spacer to force the logo into the exact mathematical center on mobile -->
+  <div class="nav-spacer" style="width: 30px; display: none;"></div>
+
+  <a href="#hero" class="nav-logo" style="display: flex; align-items: center; text-decoration: none;">
+    <img id="site-logo" src="darkmode_logo.png" alt="OASIS Logo" style="height: 130px; width: auto; object-fit: contain;">
   </a>
-  <ul class="nav-links" id="navLinks">
+
+  <ul class="nav-links" id="navLinks" style="display: flex; align-items: center; gap: 2rem; list-style: none; margin: 0;">
     <li><a href="#products">Products</a></li>
     <li><a href="#technology">Technology</a></li>
     <li><a href="#rd">R&amp;D</a></li>
     <li><a href="#partners">Partners</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <a href="#contact" class="btn-cta nav-cta">Get Protected</a>
-  <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
-    <span></span><span></span><span></span>
+
+  <div class="nav-cta-wrapper" style="display: flex; align-items: center;">
+    <a href="#contact" class="btn-cta nav-cta">Get Protected</a>
+  </div>
+  <!-- THE MISSING THREE-LINE HAMBURGER BUTTON -->
+  <div class="hamburger" id="mobileMenuBtn" style="display: none; flex-direction: column; gap: 6px; cursor: pointer; width: 30px; z-index: 1001;" onclick="document.getElementById('navLinks').classList.toggle('active')">
+    <span style="background-color: var(--text-primary, #ffffff); height: 3px; width: 100%; border-radius: 2px; transition: 0.3s;"></span>
+    <span style="background-color: var(--text-primary, #ffffff); height: 3px; width: 100%; border-radius: 2px; transition: 0.3s;"></span>
+    <span style="background-color: var(--text-primary, #ffffff); height: 3px; width: 100%; border-radius: 2px; transition: 0.3s;"></span>
   </div>
 </nav>
-
 <!-- Mobile Nav Overlay -->
 <div class="mobile-nav-overlay" id="mobileNav">
   <a href="#products" onclick="closeMobileNav()">Products</a>
@@ -1237,27 +1279,26 @@
   <!-- ========================================================= -->
     <!-- REWRITTEN PRODUCTS HEADER WITH LARGER SIDE-BY-SIDE IMAGE  -->
     <!-- ========================================================= -->
-<div class="products-header reveal" style="display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; width: 100%; margin-bottom: 50px;">
+<div class="products-header reveal" style="display: flex; align-items: center; justify-content: space-between; gap: 50px; flex-wrap: wrap; width: 100%; margin-bottom: 70px;">
       
-      <div style="flex: 1; min-width: 280px; text-align: left;">
+      <div style="flex: 1.1; min-width: 320px; text-align: left;">
         <div class="section-badge badge-green" style="display: inline-flex; align-items: center; gap: 8px;">
           <span style="width:7px;height:7px;background:var(--teal);border-radius:50%;display:inline-block;animation:pulse-dot 2s infinite;"></span>
           Available Now
         </div>
-        <h2 class="section-heading" style="margin-top: 12px; margin-bottom: 12px; text-align: left;">Smart Gas Detector System</h2>
-        <p class="section-sub" style="margin: 0; max-width: 500px; text-align: left;">Autonomous hazard mitigation for households, commercial kitchens, and real estate.</p>
+        <h2 class="section-heading" style="font-size: 3rem; line-height: 1.2; margin-top: 16px; margin-bottom: 16px; text-align: left;">Smart Gas Detector System</h2>
+        <p class="section-sub" style="font-size: 1.2rem; margin: 0; max-width: 520px; text-align: left; opacity: 0.9;">Autonomous hazard mitigation for households, commercial kitchens, and real estate.</p>
       </div>
 
-      <div style="flex: 1; min-width: 280px; display: flex; justify-content: flex-end; align-items: center;">
-        <div class="glass-card" style="padding: 20px; border-radius: 24px; max-width: 440px; width: 100%; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-          <img src="detector.jpeg" alt="OASIS Smart Gas Detector Hardware" style="width: 100%; height: auto; max-width: 380px; object-fit: contain; border-radius: 16px;">
+      <div style="flex: 1.3; min-width: 320px; display: flex; justify-content: flex-end; align-items: center;">
+        <div class="glass-card" style="padding: 28px; border-radius: 28px; max-width: 720px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 20px; backdrop-filter: blur(10px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.05);">
+          <img src="product_v1.jpg" alt="OASIS Smart Gas Detector Hardware" style="width: 48%; height: auto; object-fit: contain; border-radius: 16px; transition: transform 0.3s ease;">
+          <img src="component_v1.png" alt="VANGUARD Solenoid Valve Component" style="width: 48%; height: auto; object-fit: contain; border-radius: 16px; transition: transform 0.3s ease;">
         </div>
       </div>
 
     </div>
 
-    </div>
-    </div>
 
     <div class="feature-grid">
       <div class="glass-card feature-card reveal reveal-delay-1">
@@ -1290,13 +1331,14 @@
           </svg>
         </div>
         <h3>Proven Deployment</h3>
-        <p>Validated through collaborations with BUET's RISE lab and industrial partner GPH Ispat. Engineered for real-world reliability.</p>
+        <p>Validated through collaborations with BUET's RISE lab and Innovation Cohort by GPH Ispat. Engineered for real-world reliability.</p>
       </div>
     </div>
 
     <p class="target-markets reveal">Target Markets: <span>Households</span> · <span>Commercial Kitchens</span> · <span>Real Estate Infrastructure</span></p>
     <div class="cta-center reveal">
       <a href="#contact" class="btn-filled" style="font-size:1.05rem;padding:0.9rem 2.5rem;">Request a Demo →</a>
+       <a href="VENGuard/" class="btn-outline" style="font-size:1.05rem;padding:0.9rem 2.5rem;">Explore VENGuard →</a>
     </div>
   </div>
 </section>
@@ -1660,7 +1702,7 @@
                 <polyline points="22,6 12,13 2,6"/>
               </svg>
             </div>
-            <span>contact@oasis-iot.com</span>
+            <span>oasisnextbd@gmail.com</span>
           </div>
           <div class="contact-detail">
             <div class="contact-detail-icon">
@@ -1680,7 +1722,9 @@
 
 <!-- ===== FOOTER ===== -->
 <footer>
-  <span class="footer-logo">OASIS</span>
+  <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+    <img id="footer-logo" src="darkmode_logo.png" alt="OASIS Logo" style="height: 100px; width: auto; object-fit: contain;">
+  </div>
   <div class="footer-links">
     <a href="#">Privacy Policy</a>
     <a href="#">Terms of Service</a>
@@ -1779,14 +1823,18 @@ const sections = document.querySelectorAll('section[id]');
 window.addEventListener('scroll', () => {
   if (window.scrollY > 50) {
     navbar.classList.add('scrolled');
+    if (document.getElementById('site-logo')) document.getElementById('site-logo').style.setProperty('height', '70px', 'important');
+    navbar.style.height = '95px';
   } else {
     navbar.classList.remove('scrolled');
+    if (document.getElementById('site-logo')) document.getElementById('site-logo').style.setProperty('height', '130px', 'important');
+    navbar.style.height = '160px';
   }
 
   // Active nav link
   let current = '';
   sections.forEach(sec => {
-    const top = sec.offsetTop - 100;
+    const top = sec.offsetTop - 120; // Slightly increased offset for the taller navbar
     if (window.scrollY >= top) current = sec.id;
   });
   navLinksEl.forEach(a => {
@@ -1797,15 +1845,17 @@ window.addEventListener('scroll', () => {
 
 // ===== MOBILE NAV =====
 function toggleMobileNav() {
-  const hamburger = document.getElementById('hamburger');
+  const hamburger = document.getElementById('mobileMenuBtn'); // Updated target ID
   const mobileNav = document.getElementById('mobileNav');
-  hamburger.classList.toggle('open');
-  mobileNav.classList.toggle('open');
-  document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+  if (hamburger) hamburger.classList.toggle('open');
+  if (mobileNav) mobileNav.classList.toggle('open');
+  document.body.style.overflow = mobileNav && mobileNav.classList.contains('open') ? 'hidden' : '';
 }
+
 function closeMobileNav() {
-  document.getElementById('hamburger').classList.remove('open');
-  document.getElementById('mobileNav').classList.remove('open');
+  const hamburger = document.getElementById('mobileMenuBtn'); // Updated target ID
+  if (hamburger) hamburger.classList.remove('open');
+  if (document.getElementById('mobileNav')) document.getElementById('mobileNav').classList.remove('open');
   document.body.style.overflow = '';
 }
 
@@ -1863,21 +1913,35 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 </script>
+
 <button class="theme-toggle-btn" id="themeToggle">☀️ Day Mode</button>
-  <script>
+<script>
   const toggleBtn = document.getElementById('themeToggle');
+  const logoImg = document.getElementById('site-logo');
+  const footerImg = document.getElementById('footer-logo'); // Added reference
+
+  // Preload both images in browser memory so there is zero delay or flashing
+  const darkLogo = new Image();
+  darkLogo.src = 'darkmode_logo.png';
   
+  const lightLogo = new Image();
+  lightLogo.src = 'oasis final.png';
+
   toggleBtn.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     
     if (currentTheme === 'light') {
-      // Switch to Dark/Night Mode
+      // Switch back to Dark/Night Mode
       document.documentElement.removeAttribute('data-theme');
       toggleBtn.innerHTML = '☀️ Day Mode';
+      if (logoImg) logoImg.src = darkLogo.src;
+      if (footerImg) footerImg.src = darkLogo.src; // Swaps footer to dark logo
     } else {
       // Switch to Light/Day Mode
       document.documentElement.setAttribute('data-theme', 'light');
       toggleBtn.innerHTML = '🌙 Night Mode';
+      if (logoImg) logoImg.src = lightLogo.src;
+      if (footerImg) footerImg.src = lightLogo.src; // Swaps footer to light logo
     }
   });
 </script>

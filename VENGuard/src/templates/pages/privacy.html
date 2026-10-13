@@ -1,0 +1,23 @@
+{% extends "legal.html" %}
+{% set legal_title_bn = "গোপনীয়তা নীতি" %}{% set legal_title_en = "Privacy policy" %}
+{% set page_title = t("গোপনীয়তা নীতি — VenGuard", "Privacy policy — VenGuard") %}
+{% set page_desc = t("VenGuard কোন তথ্য সংগ্রহ করে, কেন করে, আর কীভাবে সুরক্ষিত রাখে।", "What information VenGuard collects, why, and how we protect it.") %}
+{% block legal %}
+<h2>{{ t("আমরা কী তথ্য নিই", "What we collect") }}</h2>
+<ul>
+  <li>{{ t("আপনি ফর্মে যা লেখেন: নাম, মোবাইল নম্বর, ইমেইল (ঐচ্ছিক), এলাকা ও জেলা, রান্নাঘরের ধরন ও সংখ্যা, সিলিন্ডারের ব্র্যান্ড, ডিলার কোড।", "What you enter in our forms: name, mobile number, email (optional), area and district, kitchen type and number, cylinder brand, dealer code.") }}</li>
+  <li>{{ t("পেমেন্টের অবস্থা (দেওয়া হয়েছে কিনা) ও লেনদেন নম্বর। আপনার কার্ড নম্বর বা bKash/Nagad পিন আমরা কখনো দেখি না বা রাখি না — পেমেন্ট প্রোভাইডার তা সামলায়।", "Payment status and transaction reference. We never see or store your card number or bKash/Nagad PIN — the payment provider handles them.") }}</li>
+  <li>{{ t("আপনি সম্মতি দিলে: সাইট ব্যবহারের পরিসংখ্যান (কোন পাতা দেখা হয়েছে, কোন ডিভাইস, কোন শহর), কুকির মাধ্যমে।", "If you agree: statistics about how the site is used (pages viewed, device, city), via cookies.") }}</li>
+</ul>
+<h2>{{ t("কেন নিই", "Why") }}</h2>
+<p>{{ t("আপনার প্রি-অর্ডার বা প্রশ্নের বিষয়ে যোগাযোগ করতে, জামানত গ্রহণ ও ফেরত দিতে, ডেলিভারি ও ইনস্টলেশন করতে, আর সাইটটি উন্নত করতে।", "To contact you about your pre-order or enquiry, to take and refund deposits, to deliver and install, and to improve the site.") }}</p>
+<h2>{{ t("যা আমরা করি না", "What we never do") }}</h2>
+<ul>
+  <li>{{ t("আপনার তথ্য বিক্রি করি না।", "We do not sell your data.") }}</li>
+  <li>{{ t("আপনার নাম, ফোন নম্বর বা ইমেইল বিশ্লেষণ টুলে (Google Analytics, Meta, Clarity) পাঠাই না।", "We do not send your name, phone number or email to analytics tools (Google Analytics, Meta, Clarity).") }}</li>
+</ul>
+<h2>{{ t("কোথায় রাখা হয়", "Where it is kept") }}</h2>
+<p>{{ t("VenGuard-এর নিজস্ব ডাটাবেসে, যেখানে শুধু অনুমোদিত দলের সদস্যরা প্রবেশ করতে পারেন। পেমেন্ট, SMS ও ইমেইল পাঠাতে আমরা বিশ্বস্ত সেবাদাতা ব্যবহার করি, যারা শুধু সেই কাজের জন্যই তথ্য পায়।", "In VenGuard's own database, which only authorised team members can access. We use trusted providers to process payments and send SMS and email; they receive only what they need for that task.") }}</p>
+<h2>{{ t("আপনার অধিকার", "Your choices") }}</h2>
+<p>{{ t("আপনার তথ্য দেখতে, সংশোধন করতে বা মুছে ফেলতে চাইলে আমাদের জানান। কুকির পছন্দ যেকোনো সময় ফুটারের “কুকি সেটিংস” থেকে বদলাতে পারেন।", "Ask us to see, correct or delete your data at any time. You can change your cookie choice from “Cookie settings” in the footer.") }}</p>
+{% endblock %}

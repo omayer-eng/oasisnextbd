@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, airline, preorder_btn, testing_note %}
+{% set page_title = t("VenGuard — নিরাপত্তা যা নিজেই কাজ করে | গ্যাস লিক হলে নিজে থেকেই গ্যাস বন্ধ", "VenGuard — Safety that acts | Automatic gas shut-off for Bangladeshi kitchens") %}
+{% set page_desc = t("গ্যাস লিক হলে VenGuard নিজে থেকেই আপনার গ্যাস বন্ধ করতে তৈরি — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ বা ইন্টারনেট না থাকলেও। ৳৫০০ ফেরতযোগ্য জামানতে প্রি-অর্ডার করুন।", "VenGuard is designed to shut off your gas by itself when it senses a leak, even with nobody home, no power and no internet. Pre-order with a BDT 500 refundable deposit.") %}
+{% block content %}
+
+{# 2. Hero — centered headline, wide rounded media panel #}
+<section class="hero hero--center">
+  <div class="wrap">
+    <h1>{{ t("নিরাপত্তা যা নিজেই কাজ করে।", "Safety that acts.") }}</h1>
+    <p class="lead">
+      {% if claim("no_power_needed") and claim("no_internet_needed") %}
+      {{ t("VenGuard নিজে থেকেই আপনার গ্যাস বন্ধ করে দেয় — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ না থাকলেও, ইন্টারনেট না থাকলেও।", "VenGuard shuts off your gas by itself, even with nobody home, no power and no internet.") }}
+      {% else %}
+      {{ t("VenGuard এমনভাবে তৈরি যাতে নিজে থেকেই আপনার গ্যাস বন্ধ করে দেয় — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ না থাকলেও, ইন্টারনেট না থাকলেও।", "VenGuard is designed to shut off your gas by itself, even with nobody home, no power and no internet.") }}
+      {% endif %}
+    </p>
+    <div class="btn-row mt-2">
+      {{ preorder_btn(t, url, site, "hero") }}
+      <a class="btn btn--ghost" href="{{ url('how-it-works') }}" data-track="cta_how_it_works_click" data-position="hero">{{ t("কীভাবে কাজ করে দেখুন", "See how it works") }}</a>
+    </div>
+    {% if site.preorder.open %}
+    <p class="btn-note">{{ t("প্রি-অর্ডারে ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য।", "BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit to pre-order, fully refundable.") }} <a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></p>
+    {% endif %}
+    <div class="hero-panel">
+      {# Replace with a calm, real kitchen photo or a short silent loop when available (brief Part 4). #}
+      <picture>
+        <source srcset="{{ root }}assets/img/kit-blue-sm.webp 640w, {{ root }}assets/img/kit-blue.webp 1100w" sizes="(min-width: 1200px) 1168px, 100vw" type="image/webp">
+        <img src="{{ root }}assets/img/kit-blue.jpg" width="1100" height="746" alt="{{ t('VenGuard হোম কিট: গ্যাস ভালভ, কন্ট্রোল ইউনিট এবং গ্যাস ডিটেক্টর', 'The VenGuard Home kit: gas valve, control unit and gas detector') }}" fetchpriority="high">
+      </picture>
+    </div>
+
+    {# 3. Three-fact strip (claims rule applies) #}
+    <div class="facts facts--clean" style="text-align:left" aria-label="{{ t('মূল তথ্য', 'Key facts') }}">
+      <div class="fact">{{ icon("no-power") }}<div>
+        <strong>{{ t("বিদ্যুৎ লাগে না", "No power needed") if claim("no_power_needed") else t("বিদ্যুৎ ছাড়াই কাজ করার জন্য তৈরি", "Designed to work without mains power") }}</strong>
+        <p class="muted mt-1">{{ t("ব্যাটারিতে চলে, লোডশেডিংয়েও।", "Runs on batteries, even in a blackout.") }}</p>
+        {% if not claim("no_power_needed") %}{{ testing_note(t) }}{% endif %}
+      </div></div>
+      <div class="fact">{{ icon("no-internet") }}<div>
+        <strong>{{ t("ইন্টারনেট লাগে না", "No internet needed") if claim("no_internet_needed") else t("ইন্টারনেট ছাড়াই কাজ করার জন্য তৈরি", "Designed to work without internet") }}</strong>
+        <p class="muted mt-1">{{ t("সুরক্ষা পুরোটাই যন্ত্রের ভেতরে।", "All the protection happens inside the device.") }}</p>
+        {% if not claim("no_internet_needed") %}{{ testing_note(t) }}{% endif %}
+      </div></div>
+      <div class="fact">{{ icon("timer") }}<div>
+        <strong>{{ t("১ সেকেন্ডের কম সময়ে ভালভ বন্ধ", "Closes the valve in under 1 second") if claim("closes_under_1s") else t("১ সেকেন্ডের কম সময়ে ভালভ বন্ধ করার লক্ষ্যে তৈরি", "Designed to close the valve in under 1 second") }}</strong>
+        <p class="muted mt-1">{{ t("লিক নিশ্চিত হওয়ার পর।", "Once a leak is confirmed.") }}</p>
+        {% if not claim("closes_under_1s") %}{{ testing_note(t) }}{% endif %}
+      </div></div>
+    </div>
+  </div>
+</section>
+
+{# Product showcase — photos and short silent clips #}
+<section class="section" style="padding-bottom:0">
+  <div class="wrap">
+    <div class="gallery-head section-head" style="max-width:none">
+      <div><span class="eyebrow">{{ t("কাছ থেকে দেখুন", "See it up close") }}</span>
+      <h2 class="mb-0">{{ t("ছোট, শান্ত, সবসময় পাহারায়।", "Small, quiet, always on guard.") }}</h2></div>
+      <a class="arrow-link" href="{{ url('home-kit') }}">{{ t("কিটের বিস্তারিত →", "Kit details →") }}</a>
+    </div>
+    {% include "partials/gallery.html" %}
+  </div>
+</section>
+
+{# 4. The problem — no fear imagery #}
+<section class="section">
+  <div class="wrap feature">
+    <div>
+      <span class="eyebrow">{{ t("সমস্যাটা কোথায়", "The problem") }}</span>
+      <h2>{{ t("সাধারণ অ্যালার্ম শুধু শব্দ করে।", "An ordinary alarm only makes noise.") }}</h2>
+      <ul class="checklist">
+        <li>{{ icon("bell") }}<span>{{ t("সাধারণ গ্যাস অ্যালার্ম শুধু শব্দ করে।", "An ordinary gas alarm only makes noise.") }}</span></li>
+        <li>{{ icon("users") }}<span>{{ t("এর জন্য কাউকে জেগে থাকতে হয়, কাছাকাছি থাকতে হয়।", "It needs someone awake and nearby.") }}</span></li>
+        <li>{{ icon("clock") }}<span>{{ t("কিন্তু গ্যাস লিক হয় রাত ২টায়ও, যখন কেউ জেগে থাকে না।", "Gas leaks at 2 a.m. too, when nobody is.") }}</span></li>
+      </ul>
+    </div>
+    <div class="panel" style="padding:40px 32px">
+      {# FOUNDERS: replace with one sourced BFSCD statistic and the exact source/year. #}
+      <p class="mt-0" style="font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--navy);line-height:1.25">{{ t("[বাংলাদেশ ফায়ার সার্ভিস ও সিভিল ডিফেন্স (BFSCD)-এর একটি পরিসংখ্যান]", "[One statistic from Bangladesh Fire Service and Civil Defence (BFSCD)]") }}</p>
+      <p class="small muted mb-0">{{ t("সূত্র: BFSCD, বছর — প্রতিষ্ঠাতারা সরবরাহ করবেন", "Source: BFSCD, year — to be supplied by the founders") }}</p>
+    </div>
+  </div>
+</section>
+
+{# 5. How it works — three steps with the Air Line #}
+<section class="section" style="padding-top:0">
+  <div class="wrap"><div class="panel">
+    <div class="section-head">
+      <span class="eyebrow">{{ t("কীভাবে কাজ করে", "How it works") }}</span>
+      <h2>{{ t("এটা নিজেই কাজ করে, আপনাকে কিছু করতে হয় না।", "It acts, so you don't have to.") }}</h2>
+    </div>
+    {{ airline() }}
+    <ol class="steps mt-1">
+      <li><span class="step-num">{{ num(1) }}</span>{{ icon("sense") }}<h3>{{ t("গ্যাস টের পায়", "It senses gas") }}</h3><p class="muted">{{ t("ডিটেক্টর সারাক্ষণ রান্নাঘরের বাতাস পরীক্ষা করে।", "The detector checks the kitchen air all the time.") }}</p></li>
+      <li><span class="step-num">{{ num(2) }}</span>{{ icon("valve") }}<h3>{{ t("ভালভ নিজেই বন্ধ হয়", "The valve closes by itself") }}</h3><p class="muted">{{ t("লিক নিশ্চিত হলে ভালভ সিলিন্ডারের গ্যাস বন্ধ করে দেয়।", "When a leak is confirmed, the valve shuts off gas from the cylinder.") }}</p></li>
+      <li><span class="step-num">{{ num(3) }}</span>{{ icon("reset") }}<h3>{{ t("১০ সেকেন্ডে রিসেট", "You reset it in 10 seconds") }}</h3><p class="muted">{{ t("জায়গাটা নিরাপদ হলে হাতে রিসেট করুন, আবার রান্না শুরু করুন।", "Once the area is safe, reset it by hand and cook again.") }}</p></li>
+    </ol>
+    <p class="mt-2 mb-0"><a class="arrow-link" href="{{ url('how-it-works') }}" data-track="cta_how_it_works_click" data-position="steps">{{ t("বিস্তারিত দেখুন →", "Read the full explanation →") }}</a></p>
+  </div></div>
+</section>
+
+{# 6. Two layers: honest pricing, no lock-in #}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">{{ t("দুই স্তর", "Two layers") }}</span>
+      <h2>{{ t("মূল সুরক্ষা কখনো সাবস্ক্রিপশনের পেছনে আটকে থাকে না।", "Core safety is never behind a subscription.") }}</h2>
+    </div>
+    <div class="grid grid--2">
+      <div class="card card--mist">
+        {{ icon("shield", "icon") }}
+        <span class="tag tag--teal">{{ t("সবার জন্য", "Included") }}</span>
+        <h3 class="mt-1">{{ t("কোর সেফটি", "Core Safety") }}</h3>
+        <p class="price">{{ t("একবার কিনলেই", "One-time purchase") }}</p>
+        <ul>
+          <li>{{ t("ইন্টারনেট ছাড়াই কাজ করার জন্য তৈরি", "Designed to work fully offline") }}</li>
+          <li>{{ t("গ্যাস টের পাওয়া, ভালভ বন্ধ, হাতে রিসেট", "Sensing, valve closing, manual reset") }}</li>
+          <li>{{ t("কখনো পেওয়ালের পেছনে নয়", "Never paywalled") }}</li>
+        </ul>
+      </div>
+      <div class="card">
+        {{ icon("cloud", "icon") }}
+        <span class="tag">{{ t("ঐচ্ছিক", "Optional") }}</span>
+        <h3 class="mt-1">{{ t("কানেক্টেড", "Connected") }}</h3>
+        <p class="price">{{ t("৳" ~ num(site.preorder.connected_plan_bdt_per_year) ~ " / বছর", "BDT " ~ num(site.preorder.connected_plan_bdt_per_year) ~ " / year") }}</p>
+        <ul>
+          <li>{{ t("দূর থেকে ভালভ বন্ধ", "Remote close") }}</li>
+          <li>{{ t("ফোনে সতর্কবার্তা", "Alerts on your phone") }}</li>
+          <li>{{ t("বাড়িওয়ালাদের জন্য ড্যাশবোর্ড", "Landlord dashboard") }}</li>
+        </ul>
+        <p class="small muted">{{ t("বাদ দিলেও কোর সেফটি আগের মতোই চলবে।", "Cancel any time; Core Safety keeps working.") }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# 7. Fits your kitchen — alternating feature rows #}
+<section class="section">
+  <div class="wrap">
+    <div class="feature feature--flip">
+      <div>
+        <span class="eyebrow">{{ t("আপনার রান্নাঘরে মানানসই", "Fits your kitchen") }}</span>
+        <h2>{{ t("গ্যাস লাইনে হাত দেওয়ার ভয় নেই।", "No need to fear touching the gas line.") }}</h2>
+        <ul class="checklist">
+          <li>{{ icon("pipe") }}<span><strong>{{ t("পাইপে কোনো পরিবর্তন নেই।", "No change to gas pipes.") }}</strong> {{ t("কাটাকাটি বা পাইপ বদল ছাড়াই বর্তমান গ্যাস লাইনে বসে।", "It fits your existing gas line without cutting or changing pipes.") }}</span></li>
+          <li>{{ icon("tools") }}<span><strong>{{ t("বিশেষ যন্ত্র লাগে না।", "No special tools.") }}</strong> {{ t("ছবিসহ সহজ ধাপে বসানো যায়।", "Simple steps with picture instructions.") }}</span></li>
+          <li>{{ icon("battery") }}<span><strong>{{ t("ব্যাটারিতে চলে।", "Works on batteries.") }}</strong> {{ t("প্লাগ বা ওয়্যারিং লাগে না।", "No plug or wiring needed.") }}</span></li>
+        </ul>
+        <p class="mt-2"><a class="arrow-link" href="{{ url('home-kit') }}">{{ t("কিটে কী থাকে দেখুন →", "See what's in the kit →") }}</a></p>
+      </div>
+      {# FOUNDERS: replace with a real photo of hands installing the device (with written consent). #}
+      <div class="feature-media"><picture><source srcset="{{ root }}assets/img/valve-sm.webp 560w, {{ root }}assets/img/valve.webp 900w" sizes="(min-width: 880px) 50vw, 100vw" type="image/webp"><img src="{{ root }}assets/img/valve.jpg" width="900" height="565" loading="lazy" alt="{{ t('VenGuard স্বয়ংক্রিয় গ্যাস ভালভ', 'The VenGuard automatic gas valve') }}"></picture></div>
+    </div>
+  </div>
+</section>
+
+{# 8. Voices from the field — only real, permitted quotes (src/site.json → testimonials) #}
+{% if site.testimonials %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><span class="eyebrow">{{ t("মাঠ থেকে", "Voices from the field") }}</span><h2>{{ t("যাঁদের সাথে আমরা কথা বলেছি", "What people told us") }}</h2></div>
+    <div class="grid grid--3">
+      {% for q in site.testimonials %}
+      <figure class="card quote"><p>“{{ t(q.quote_bn, q.quote_en) }}”</p><footer>— {{ t(q.name_bn, q.name_en) }}, {{ num(q.age) }}, {{ t(q.area_bn, q.area_en) }}</footer></figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# 9. Where we are today — honest status #}
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">{{ t("আমরা এখন কোথায়", "Where we are today") }}</span>
+      <h2>{{ t("সৎভাবে বলছি, আমরা কোন ধাপে আছি।", "An honest look at where we are.") }}</h2>
+    </div>
+    {% include "partials/timeline.html" %}
+    {% if not site.certifications_granted %}
+    <p class="small muted mt-1">{{ t("সার্টিফিকেশন পাওয়ার পরই শুধু এখানে সার্টিফিকেশন চিহ্ন দেখানো হবে।", "Certification marks will appear here only after they are granted.") }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{# 10. Who it is for — tabbed #}
+<section class="section" style="padding-top:0">
+  <div class="wrap"><div class="panel">
+    <div class="section-head"><span class="eyebrow">{{ t("কার জন্য", "Who it is for") }}</span><h2>{{ t("আপনার রান্নাঘর, আপনার ভবন, আপনার ব্যবসা।", "Your kitchen, your building, your business.") }}</h2></div>
+    {% include "partials/audience-tabs.html" %}
+  </div></div>
+</section>
+
+{# 11. FAQ (short) #}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><span class="eyebrow">{{ t("সাধারণ প্রশ্ন", "FAQ") }}</span><h2>{{ t("আপনার প্রশ্নের উত্তর", "Answers to common questions") }}</h2></div>
+    {% set faq_limit = 7 %}
+    {% include "partials/faq-list.html" %}
+    <p class="mt-2"><a href="{{ url('faq') }}">{{ t("সব প্রশ্ন দেখুন →", "See all questions →") }}</a></p>
+  </div>
+</section>
+
+{# 12. Final call to action #}
+<section class="section">
+  <div class="wrap">
+    {% include "partials/cta-band.html" %}
+  </div>
+</section>
+{% endblock %}

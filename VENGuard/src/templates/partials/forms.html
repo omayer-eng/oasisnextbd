@@ -1,0 +1,102 @@
+{#- One form skeleton for every lead type (brief Part 6: "the same form skeleton,
+    with different fields, serves the landlord, restaurant and dealer enquiries").
+    assets/js/site.js handles validation, tracking and submission for any
+    <form data-vg-form="TYPE">. -#}
+
+{% macro field(t, name, bn, en, type="text", required=false, autocomplete="", hint_bn="", hint_en="", inputmode="", value="", attrs="") -%}
+<div class="field" data-field="{{ name }}">
+  <label for="f-{{ name }}">{{ t(bn, en) }}{% if not required %} <span class="opt">{{ t("(ঐচ্ছিক)", "(optional)") }}</span>{% endif %}
+    {% if hint_bn %}<span class="hint">{{ t(hint_bn, hint_en) }}</span>{% endif %}</label>
+  {% if type == "textarea" %}
+  <textarea id="f-{{ name }}" name="{{ name }}"{% if required %} required{% endif %}></textarea>
+  {% else %}
+  <input id="f-{{ name }}" name="{{ name }}" type="{{ type }}"{% if required %} required{% endif %}{% if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}{% if inputmode %} inputmode="{{ inputmode }}"{% endif %}{% if value %} value="{{ value }}"{% endif %} {{ attrs|safe }}>
+  {% endif %}
+  <span class="field-error" id="f-{{ name }}-err" data-msg-required="{{ t('এই ঘরটি পূরণ করুন।', 'Please fill in this field.') }}"></span>
+</div>
+{%- endmacro %}
+
+{% macro phone(t) -%}
+{{ field(t, "phone", "মোবাইল নম্বর", "Mobile number", "tel", true, "tel", "যেমন: ০১৭১২৩৪৫৬৭৮", "For example: 01712345678", "tel", attrs='data-validate="bd-mobile" data-msg-invalid="' ~ t("সঠিক বাংলাদেশি মোবাইল নম্বর লিখুন (০১ দিয়ে শুরু, ১১ সংখ্যা)।", "Please enter a valid Bangladesh mobile number (11 digits, starting with 01).") ~ '"') }}
+{%- endmacro %}
+
+{% macro select(t, name, bn, en, options, required=false) -%}
+<div class="field" data-field="{{ name }}">
+  <label for="f-{{ name }}">{{ t(bn, en) }}{% if not required %} <span class="opt">{{ t("(ঐচ্ছিক)", "(optional)") }}</span>{% endif %}</label>
+  <select id="f-{{ name }}" name="{{ name }}"{% if required %} required{% endif %}>
+    <option value="">{{ t("বেছে নিন", "Choose one") }}</option>
+    {% for v, label in options %}<option value="{{ v }}">{{ label }}</option>{% endfor %}
+  </select>
+  <span class="field-error" data-msg-required="{{ t('একটি বেছে নিন।', 'Please choose one.') }}"></span>
+</div>
+{%- endmacro %}
+
+{% macro choices(t, name, bn, en, options, required=false, checked="") -%}
+<div class="field" data-field="{{ name }}">
+  <fieldset>
+    <legend>{{ t(bn, en) }}</legend>
+    <div class="choice-row">
+      {% for v, label in options %}
+      <label class="choice"><input type="radio" name="{{ name }}" value="{{ v }}"{% if required %} required{% endif %}{% if v == checked %} checked{% endif %}><span>{{ label }}</span></label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <span class="field-error" data-msg-required="{{ t('একটি বেছে নিন।', 'Please choose one.') }}"></span>
+</div>
+{%- endmacro %}
+
+{% macro districts(t) -%}
+{{ select(t, "district", "জেলা", "District", [
+  ("Dhaka", t("ঢাকা", "Dhaka")), ("Chattogram", t("চট্টগ্রাম", "Chattogram")), ("Gazipur", t("গাজীপুর", "Gazipur")),
+  ("Narayanganj", t("নারায়ণগঞ্জ", "Narayanganj")), ("Sylhet", t("সিলেট", "Sylhet")), ("Khulna", t("খুলনা", "Khulna")),
+  ("Rajshahi", t("রাজশাহী", "Rajshahi")), ("Barishal", t("বরিশাল", "Barishal")), ("Rangpur", t("রংপুর", "Rangpur")),
+  ("Mymensingh", t("ময়মনসিংহ", "Mymensingh")), ("Cumilla", t("কুমিল্লা", "Cumilla")), ("Bogura", t("বগুড়া", "Bogura")),
+  ("Other", t("অন্য জেলা", "Other district"))], true) }}
+{%- endmacro %}
+
+{% macro heard(t) -%}
+{{ select(t, "heard_from", "আমাদের কথা কোথায় শুনলেন?", "How did you hear about us?", [
+  ("facebook", "Facebook"), ("whatsapp", "WhatsApp"), ("google", "Google"),
+  ("dealer", t("ডিলার বা দোকান", "Dealer or shop")), ("friend", t("বন্ধু বা পরিবার", "Friend or family")),
+  ("news", t("খবর বা অনুষ্ঠান", "News or event")), ("other", t("অন্যান্য", "Other"))]) }}
+{%- endmacro %}
+
+{% macro consent(t, url) -%}
+<div class="field" data-field="consent">
+  <label class="check"><input type="checkbox" name="consent" value="yes" required>
+    <span>{{ t("VenGuard আমার অর্ডার বা প্রশ্নের বিষয়ে ফোন, SMS, WhatsApp বা ইমেইলে যোগাযোগ করতে পারে। আমার তথ্য বিক্রি করা হবে না।", "VenGuard may contact me by phone, SMS, WhatsApp or email about my order or enquiry. My data will not be sold.") }} <a href="{{ url('privacy') }}">{{ t("গোপনীয়তা নীতি", "Privacy policy") }}</a></span></label>
+  <span class="field-error" data-msg-required="{{ t('এগিয়ে যেতে সম্মতি দিন।', 'Please tick to continue.') }}"></span>
+</div>
+{%- endmacro %}
+
+{% macro hidden(t) -%}
+{# Filled by site.js: campaign tags, dealer/QR code, page and language. Spam honeypot stays empty. #}
+<input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign"><input type="hidden" name="utm_content">
+<input type="hidden" name="qr_tag"><input type="hidden" name="landing_page"><input type="hidden" name="referrer"><input type="hidden" name="lang">
+<div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+{%- endmacro %}
+
+{% macro status() -%}
+<div class="form-status" role="status" aria-live="polite"></div>
+{%- endmacro %}
+
+{% macro submit(t, bn, en) -%}
+<div><button class="btn btn--primary" type="submit" data-label-busy="{{ t('পাঠানো হচ্ছে…', 'Sending…') }}">{{ t(bn, en) }}</button></div>
+{%- endmacro %}
+
+{% macro page_head(t, url, title_bn, title_en, intro_bn="", intro_en="") -%}
+<section class="page-head">
+  <div class="wrap">
+    <p class="breadcrumb"><a href="{{ url('') }}">VenGuard</a> / {{ t(title_bn, title_en) }}</p>
+    <h1>{{ t(title_bn, title_en) }}</h1>
+    {% if intro_bn %}<p class="lead">{{ t(intro_bn, intro_en) }}</p>{% endif %}
+  </div>
+</section>
+{%- endmacro %}
+
+{# Lead form shared by landlord / restaurant / dealer / waitlist / contact. #}
+{% macro thanks_messages(t) -%}
+data-msg-ok="{{ t('ধন্যবাদ! আপনার তথ্য পেয়েছি। আমাদের দল শীঘ্রই যোগাযোগ করবে।', 'Thank you! We have your details. Our team will be in touch soon.') }}"
+data-msg-fail="{{ t('দুঃখিত, পাঠানো যায়নি। আবার চেষ্টা করুন বা WhatsApp-এ লিখুন।', 'Sorry, that did not send. Please try again or message us on WhatsApp.') }}"
+data-msg-check="{{ t('কিছু ঘর ঠিক করতে হবে, নিচে দেখুন।', 'Some fields need attention, see below.') }}"
+{%- endmacro %}

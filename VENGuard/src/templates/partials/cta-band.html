@@ -1,0 +1,9 @@
+{% from "partials/macros.html" import preorder_btn, airline %}
+<div class="cta-band">
+  <h2>{{ t("আপনার VenGuard হোম রিজার্ভ করুন", "Reserve your VenGuard Home") }}</h2>
+  <p>{{ t("৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য। ডেলিভারির আগে আমরা ফোন করে নিশ্চিত করব।", "BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable. We will call you to confirm before delivery.") }}</p>
+  <div class="btn-row mt-2">
+    {{ preorder_btn(t, url, site, "final_cta", "btn btn--light") }}
+    <a class="btn btn--ghost-light" href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="final_cta">{{ t("WhatsApp-এ প্রশ্ন করুন", "Ask on WhatsApp") }}</a>
+  </div>
+</div>

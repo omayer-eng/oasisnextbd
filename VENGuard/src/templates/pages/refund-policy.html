@@ -1,0 +1,19 @@
+{% extends "legal.html" %}
+{% set legal_title_bn = "জামানত ফেরত নীতি" %}{% set legal_title_en = "Deposit refund policy" %}
+{% set page_title = t("জামানত ফেরত নীতি — VenGuard", "Deposit refund policy — VenGuard") %}
+{% set page_desc = t("৳৫০০ প্রি-অর্ডার জামানত কীভাবে ফেরত পাবেন — সহজ বাংলায়।", "How to get your BDT 500 pre-order deposit back — in plain words.") %}
+{% block legal %}
+{# FOUNDERS (CFO + CEO): replace with the final refund wording. #}
+<h2>{{ t("সংক্ষেপে", "In short") }}</h2>
+<p class="lead">{{ t("আপনার ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত পুরোটাই ফেরতযোগ্য। ডেলিভারির আগে যেকোনো সময়, কোনো কারণ না দেখিয়েই।", "Your BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit is fully refundable, any time before delivery, no reason needed.") }}</p>
+<h2>{{ t("কীভাবে ফেরত চাইবেন", "How to ask") }}</h2>
+<ol>
+  <li>{{ t("WhatsApp, ফোন বা ইমেইলে আপনার অর্ডার নম্বর ও মোবাইল নম্বর জানান।", "Send us your order number and mobile number by WhatsApp, phone or email.") }}</li>
+  <li>{{ t("আমরা নিশ্চিত করে [X] কর্মদিবসের মধ্যে টাকা ফেরত পাঠাব।", "We confirm and send the money back within [X] working days.") }}</li>
+  <li>{{ t("যে মাধ্যমে দিয়েছিলেন (bKash, Nagad বা কার্ড), সেখানেই টাকা ফেরত যাবে।", "It goes back the way you paid (bKash, Nagad or card).") }}</li>
+</ol>
+<h2>{{ t("কিট কিনলে", "If you buy the kit") }}</h2>
+<p>{{ t("জামানতের পুরো টাকা কিটের দাম থেকে বাদ যাবে।", "The full deposit comes off the kit price.") }}</p>
+<h2>{{ t("পেমেন্ট ব্যর্থ হলে", "If a payment fails") }}</h2>
+<p>{{ t("পেমেন্ট সম্পূর্ণ না হলেও কোনো টাকা কাটা হলে তা স্বয়ংক্রিয়ভাবে বা আমাদের মাধ্যমে ফেরত আসবে। আমরা ফোন করে সাহায্য করব।", "If a payment does not complete but money was taken, it is returned automatically or by us. We will call to help.") }}</p>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% from "partials/macros.html" import icon %}
+<div class="grid grid--3">
+  <a class="tile" href="{{ url('home-kit') }}" data-track="audience_tile_click" data-position="home">{{ icon("home") }}<strong>{{ t("বাসাবাড়ি", "Home") }}</strong><span class="muted">{{ t("আপনার পরিবারের রান্নাঘরের জন্য।", "For your family kitchen.") }}</span></a>
+  <a class="tile" href="{{ url('landlords-restaurants') }}#restaurants" data-track="audience_tile_click" data-position="restaurant">{{ icon("restaurant") }}<strong>{{ t("রেস্তোরাঁ", "Restaurants") }}</strong><span class="muted">{{ t("কর্মী ও ব্যবসা সুরক্ষিত রাখুন।", "Protect your staff and business.") }}</span></a>
+  <a class="tile" href="{{ url('landlords-restaurants') }}#landlords" data-track="audience_tile_click" data-position="landlord">{{ icon("building") }}<strong>{{ t("বাড়িওয়ালা", "Landlords") }}</strong><span class="muted">{{ t("পুরো ভবন এক জায়গা থেকে দেখুন।", "Look after a whole building.") }}</span></a>
+</div>
+<div class="grid grid--2 mt-1">
+  <a class="tile tile--soon" href="{{ url('agro-marine') }}" data-track="audience_tile_click" data-position="agro">{{ icon("agro") }}<strong>{{ t("VenGuard এগ্রো", "VenGuard Agro") }}</strong><span>{{ t("পোল্ট্রি খামারের জন্য — শীঘ্রই আসছে", "For poultry farms — coming soon") }}</span></a>
+  <a class="tile tile--soon" href="{{ url('agro-marine') }}" data-track="audience_tile_click" data-position="marine">{{ icon("marine") }}<strong>{{ t("VenGuard মেরিন", "VenGuard Marine") }}</strong><span>{{ t("নৌযানের জন্য — শীঘ্রই আসছে", "For vessels — coming soon") }}</span></a>
+</div>

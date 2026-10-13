@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% import "partials/forms.html" as f %}
+{% set page_title = t("VenGuard ডিলার হোন — এলপিজি ডিলার ও হার্ডওয়্যার দোকানের জন্য", "Become a VenGuard dealer — for LPG dealers and hardware shops") %}
+{% set page_desc = t("আপনার গ্রাহকদের সহজে বোঝানো যায় এমন একটি নিরাপত্তা পণ্য বিক্রি করুন। মার্জিন, প্রশিক্ষণ ও সহায়তা। ডিলার হিসেবে নিবন্ধন করুন।", "Sell a safety product that is easy to explain. Margin, training and support. Register as a dealer.") %}
+{% block content %}
+{{ f.page_head(t, url, "VenGuard ডিলার হোন", "Become a VenGuard dealer", "এলপিজি ডিলার ও হার্ডওয়্যার দোকানের জন্য। আপনার গ্রাহক প্রতিদিন গ্যাস কেনেন — তাদের নিরাপত্তাও আপনার কাছ থেকেই আসুক।", "For LPG dealers and hardware shops. Your customers buy gas from you every week — let their safety come from you too.") }}
+<section class="section">
+  <div class="wrap">
+    <div class="grid grid--3">
+      <div class="card">{{ icon("dealer", "icon") }}<h3>{{ t("ন্যায্য মার্জিন", "A fair margin") }}</h3><p class="muted mt-0">{{ t("প্রতিটি কিটে নির্দিষ্ট মার্জিন। বিস্তারিত নিবন্ধনের পর জানাব।", "A set margin on every kit. We share details after you register.") }}</p></div>
+      <div class="card">{{ icon("users", "icon") }}<h3>{{ t("সহজে বোঝানো যায়", "Easy to explain") }}</h3><p class="muted mt-0">{{ t("“লিক হলে নিজেই গ্যাস বন্ধ করে” — এক বাক্যেই বোঝা যায়। আমরা কাউন্টার কার্ড ও ভিডিও দেব।", "“It shuts the gas off by itself” — one sentence. We provide counter cards and a short video.") }}</p></div>
+      <div class="card">{{ icon("shield", "icon") }}<h3>{{ t("প্রশিক্ষণ ও সহায়তা", "Training and support") }}</h3><p class="muted mt-0">{{ t("বসানোর প্রশিক্ষণ, WhatsApp সহায়তা, আর আপনার নিজস্ব ডিলার কোড ও QR স্টিকার।", "Installation training, WhatsApp support, and your own dealer code and QR sticker.") }}</p></div>
+    </div>
+    <div class="notice mt-2"><p class="mt-0">{{ t("আপনার ডিলার কোড দিয়ে যে গ্রাহক প্রি-অর্ডার করবেন, তা আপনার নামে গণনা হবে। ভবিষ্যতে “VenGuard অনুমোদিত ডিলার” ব্যাজ ও ডিলার ম্যাপে আপনার দোকান দেখানো হবে।", "Pre-orders made with your dealer code are counted for you. Later, authorised dealers get the “VenGuard Authorised Dealer” badge and a place on the dealer map.") }}</p></div>
+  </div>
+</section>
+<section class="section section--mist">
+  <div class="wrap">
+    <h2>{{ t("ডিলার নিবন্ধন", "Dealer registration") }}</h2>
+    <form class="form" data-vg-form="dealer" novalidate {{ f.thanks_messages(t) }}>
+      {{ f.hidden(t) }}
+      <input type="hidden" name="kitchen_type" value="dealer">
+      {{ f.choices(t, "business_type", "ব্যবসার ধরন", "Type of business", [("lpg_dealer", t("এলপিজি ডিলার", "LPG dealer")), ("hardware", t("হার্ডওয়্যার দোকান", "Hardware shop")), ("electrical", t("ইলেকট্রিক্যাল দোকান", "Electrical shop")), ("other", t("অন্যান্য", "Other"))], true) }}
+      <div class="form-grid form-grid--2">
+        {{ f.field(t, "name", "আপনার নাম", "Your name", "text", true, "name") }}
+        {{ f.phone(t) }}
+      </div>
+      <div class="form-grid form-grid--2">
+        {{ f.field(t, "organisation", "দোকানের নাম", "Shop name", "text", true, "organization") }}
+        {{ f.field(t, "email", "ইমেইল", "Email", "email", false, "email", attrs='data-validate="email" data-msg-invalid="' ~ t("সঠিক ইমেইল ঠিকানা লিখুন।", "Please enter a valid email address.") ~ '"') }}
+      </div>
+      <div class="form-grid form-grid--2">
+        {{ f.field(t, "area", "বাজার / এলাকা", "Market / area", "text", true, "address-level3") }}
+        {{ f.districts(t) }}
+      </div>
+      {{ f.field(t, "units", "মাসে আনুমানিক কতজন এলপিজি গ্রাহক?", "Roughly how many LPG customers a month?", "number", false, "", inputmode="numeric", attrs='min="0" data-validate="units-optional" data-msg-invalid="' ~ t("একটি সঠিক সংখ্যা লিখুন।", "Please enter a valid number.") ~ '"') }}
+      {{ f.field(t, "message", "কোনো প্রশ্ন?", "Any questions?", "textarea") }}
+      {{ f.heard(t) }}
+      {{ f.consent(t, url) }}
+      {{ f.status() }}
+      {{ f.submit(t, "নিবন্ধন করুন", "Register interest") }}
+    </form>
+  </div>
+</section>
+{% endblock %}

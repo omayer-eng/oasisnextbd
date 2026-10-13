@@ -1,0 +1,30 @@
+{% from "partials/macros.html" import icon %}
+{% set aud = [
+  ("home", "home", t("বাসাবাড়ি", "Home"), t("আপনার পরিবারের রান্নাঘরের জন্য।", "For your family kitchen."),
+    [t("নিজেই বসানো যায়, পাইপে হাত দিতে হয় না", "Install it yourself, no pipe work"), t("বাসায় কেউ না থাকলেও সুরক্ষা", "Protection even when nobody is home"), t("একবার কিনলেই, কোনো বাধ্যতামূলক ফি নেই", "One-time purchase, no compulsory fees")],
+    url('home-kit'), t("হোম কিট দেখুন", "See the Home kit"), "kit-gray"),
+  ("restaurant", "restaurant", t("রেস্তোরাঁ", "Restaurants"), t("কর্মী ও ব্যবসা সুরক্ষিত রাখুন।", "Protect your staff and business."),
+    [t("ব্যস্ত রান্নাঘরে, গন্ধ কেউ খেয়াল না করলেও", "In a busy kitchen, even if nobody notices a smell"), t("রাতে দোকান বন্ধ থাকার সময়ও", "Overnight, while you are closed"), t("কয়েকটি রান্নাঘরের জন্য কোটেশন", "A quote for several kitchens")],
+    url('landlords-restaurants') ~ "#restaurants", t("কোটেশন নিন", "Get a quote"), "kit-skin"),
+  ("landlord", "building", t("বাড়িওয়ালা", "Landlords"), t("পুরো ভবন এক জায়গা থেকে দেখুন।", "Look after a whole building."),
+    [t("প্রতিটি ফ্ল্যাটে আলাদা সুরক্ষা", "Protection in every flat"), t("ঐচ্ছিক ড্যাশবোর্ডে সব ইউনিট", "Every unit on an optional dashboard"), t("বেশি ইউনিটে বিশেষ দাম", "Volume pricing for many units")],
+    url('landlords-restaurants') ~ "#landlords", t("ভবনের জন্য জানুন", "Plan for a building"), "kit-maroon"),
+] %}
+<div data-tabs>
+  <div class="tabs" role="tablist" aria-label="{{ t('কার জন্য', 'Who it is for') }}">
+    {% for id, ic, label, _s, _b, _u, _c, _img in aud %}
+    <button type="button" role="tab" id="tab-{{ id }}" aria-controls="panel-{{ id }}" aria-selected="{{ 'true' if loop.first else 'false' }}"{% if not loop.first %} tabindex="-1"{% endif %}>{{ icon(ic) }}{{ label }}</button>
+    {% endfor %}
+    <a role="presentation" class="btn btn--sm" style="border:1px dashed #B9CCD8;color:var(--slate);text-decoration:none" href="{{ url('agro-marine') }}" data-track="audience_tile_click" data-position="agro_marine">{{ icon("agro", "", 18) }}{{ t("এগ্রো ও মেরিন · শীঘ্রই", "Agro and Marine · soon") }}</a>
+  </div>
+  {% for id, ic, label, sub, bullets, link, cta, img in aud %}
+  <div class="tabpanel" role="tabpanel" id="panel-{{ id }}" aria-labelledby="tab-{{ id }}"{% if not loop.first %} hidden{% endif %}>
+    <div>
+      <h3 style="font-size:1.6rem">{{ sub }}</h3>
+      <ul class="checklist">{% for b in bullets %}<li>{{ icon("check") }}<span>{{ b }}</span></li>{% endfor %}</ul>
+      <p class="mt-2"><a class="btn btn--ghost" href="{{ link }}" data-track="audience_tile_click" data-position="{{ id }}">{{ cta }}</a></p>
+    </div>
+    <div class="feature-media"><picture><source srcset="{{ root }}assets/img/{{ img }}-sm.webp" type="image/webp"><img src="{{ root }}assets/img/{{ img }}-sm.jpg" width="640" height="446" loading="lazy" alt="{{ t('VenGuard হোম কিট', 'VenGuard Home kit') }}"></picture></div>
+  </div>
+  {% endfor %}
+</div>

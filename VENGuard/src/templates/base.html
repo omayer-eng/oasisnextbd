@@ -1,0 +1,62 @@
+{% from "partials/macros.html" import icon, preorder_btn %}
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ page_desc }}">
+{% if noindex %}<meta name="robots" content="noindex">{% endif %}
+<link rel="canonical" href="{{ canonical }}">
+<link rel="alternate" hreflang="bn" href="{{ alt_bn }}">
+<link rel="alternate" hreflang="en" href="{{ alt_en }}">
+<link rel="alternate" hreflang="x-default" href="{{ alt_bn }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VenGuard">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ page_desc }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:image" content="{{ site.base_url }}/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="{{ 'bn_BD' if lang == 'bn' else 'en_US' }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B2A4A">
+{% if site.tracking.search_console_verification %}<meta name="google-site-verification" content="{{ site.tracking.search_console_verification }}">{% endif %}
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5 7v8c0 7 4.7 11.6 11 14 6.3-2.4 11-7 11-14V7L16 3Z' fill='%230B2A4A'/%3E%3Cpath d='M9.5 16.5c2.2-2.6 4.3-2.6 6.5 0s4.3 2.6 6.5 0' stroke='%2312B5A6' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ root }}assets/css/venguard.css">
+<script>
+/* Remember the visitor's language. Bangla is the default; if they chose English before, take them there. */
+(function(){try{var l=localStorage.getItem("vg_lang");if(l==="en"&&document.documentElement.lang==="bn"&&!/[?&]lang=bn/.test(location.search)){location.replace("{{ url(slug, 'en') }}"+location.search+location.hash);}}catch(e){}})();
+</script>
+<script src="{{ root }}assets/js/config.js" defer></script>
+<script src="{{ root }}assets/js/analytics.js" defer></script>
+<script src="{{ root }}assets/js/site.js" defer></script>
+</head>
+<body class="{% if slug not in ['pre-order', 'pre-order/thank-you'] and site.preorder.open %}has-mobile-cta{% endif %}" data-page="{{ slug or 'home' }}" data-lang="{{ lang }}">
+<a class="skip-link" href="#main">{{ t("মূল অংশে যান", "Skip to content") }}</a>
+{% include "partials/header.html" %}
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+{% include "partials/footer.html" %}
+{% if slug not in ['pre-order', 'pre-order/thank-you'] and site.preorder.open %}
+<div class="mobile-cta">
+  {{ preorder_btn(t, url, site, "mobile_sticky") }}
+  <a class="btn btn--ghost" href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="mobile_sticky" aria-label="WhatsApp">{{ icon("whatsapp") }}<span class="visually-hidden">WhatsApp</span></a>
+</div>
+{% endif %}
+<div class="consent" id="consent" role="region" aria-label="{{ t('কুকি পছন্দ', 'Cookie choice') }}">
+  <div class="wrap">
+    <p>{{ t("সাইটটি আরও ভালো করতে আমরা কতজন ভিজিট করছেন তা গুনতে কুকি ব্যবহার করতে চাই। আপনার ফোন নম্বর বা নাম কখনো এসব টুলে যায় না।", "We would like to use cookies to count visits so we can improve this site. Your name and phone number are never sent to these tools.") }} <a href="{{ url('cookies') }}">{{ t("বিস্তারিত", "Details") }}</a></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--ghost btn--sm" data-consent="denied">{{ t("শুধু প্রয়োজনীয়", "Essential only") }}</button>
+      <button type="button" class="btn btn--primary btn--sm" data-consent="granted">{{ t("মেনে নিচ্ছি", "Accept analytics") }}</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

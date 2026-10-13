@@ -1,0 +1,29 @@
+{% set nav = [
+  ("home-kit", t("হোম কিট", "Home kit")),
+  ("how-it-works", t("কীভাবে কাজ করে", "How it works")),
+  ("landlords-restaurants", t("বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants")),
+  ("dealers", t("ডিলার", "Dealers")),
+  ("guides", t("নিরাপত্তা গাইড", "Guides")),
+  ("about", t("আমাদের কথা", "About")),
+] %}
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="{{ url('') }}" aria-label="{{ t('VenGuard হোম', 'VenGuard home') }}">{% include "partials/logo.html" %}</a>
+    <nav class="nav" id="site-nav" aria-label="{{ t('প্রধান মেনু', 'Main menu') }}">
+      <ul>
+        {% for s, label in nav %}
+        <li><a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% endif %}>{{ label }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="{{ t('ভাষা', 'Language') }}">
+        <a href="{{ url(slug, 'bn') }}" hreflang="bn" lang="bn" data-lang-switch="bn" aria-current="{{ 'true' if lang == 'bn' else 'false' }}">বাংলা</a>
+        <a href="{{ url(slug, 'en') }}" hreflang="en" lang="en" data-lang-switch="en" aria-current="{{ 'true' if lang == 'en' else 'false' }}">EN</a>
+      </div>
+      <a class="icon-btn" href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="header" aria-label="{{ t('WhatsApp-এ কথা বলুন', 'Chat on WhatsApp') }}">{{ icon("whatsapp") }}</a>
+      {{ preorder_btn(t, url, site, "header", "btn btn--primary btn--sm") }}
+      <button class="icon-btn menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="{{ t('মেনু', 'Menu') }}">{{ icon("menu") }}</button>
+    </div>
+  </div>
+</header>

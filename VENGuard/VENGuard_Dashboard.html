@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<script>
+window.contextInfo = {"files":[],"materials":[],"crafts":[]};
+// Handle anchor link jumps in srcDoc iframe
+document.addEventListener('click', function(e) {
+  var anchor = e.target.closest('a');
+  if (anchor) {
+    var href = anchor.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      var targetId = href.slice(1);
+      var target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+});
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VenGuard — Smart Gas Detection & Automated Isolation Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            lumo: {
+              orange: '#FF2A1F',
+              'orange-hover': '#DC2626',
+              dark: '#111115',
+              bg: '#f5f5f3',
+              green: '#FF6B35',
+              text: '#111115',
+            },
+            oasis: {
+              50: '#FFF1F0',
+              100: '#FFE0DD',
+              200: '#FFC0BA',
+              300: '#FF8A80',
+              400: '#FF5A45',
+              500: '#FF2A1F', // mapped to VenGuard fiery red
+              600: '#DC2626',
+              700: '#B91C1C',
+              800: '#7F1D1D',
+              900: '#4C0B0B',
+              950: '#250505',
+            }
+          },
+          fontFamily: {
+            onest: ['Onest', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          keyframes: {
+            float: {
+              '0%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+              '100%': { transform: 'translateY(0px)' },
+            },
+            'pulse-glow': {
+              '0%, 100%': { boxShadow: '0 0 5px rgba(255,42,31,0.24)' },
+              '50%': { boxShadow: '0 0 25px rgba(255,80,55,0.58), 0 0 50px rgba(255,42,31,0.24)' },
+            },
+            scan: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(100vh)' },
+            },
+            'fade-in-up': {
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            'slide-in-left': {
+              '0%': { opacity: '0', transform: 'translateX(-30px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+          },
+          animation: {
+            float: 'float 6s ease-in-out infinite',
+            'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+            scan: 'scan 8s linear infinite',
+            'fade-in-up': 'fade-in-up 0.6s ease-out both',
+            'slide-in-left': 'slide-in-left 0.6s ease-out both',
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --color-border: rgba(255,255,255,0.06);
+      --color-card: rgba(18,18,24,0.85);
+      --color-primary-ring: rgba(255,42,31,0.32);
+    }
+    .cyber-grid {
+      background-image:
+        linear-gradient(rgba(255, 42, 31, 0.026) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 42, 31, 0.026) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .cyber-grid-dense {
+      background-image:
+        linear-gradient(rgba(255, 42, 31, 0.038) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 42, 31, 0.038) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    .glow-border {
+      position: relative;
+    }
+    .glow-border::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255,80,55,0.48), transparent 40%, transparent 60%, rgba(220,38,38,0.18));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    .text-gradient-lumo {
+      background: linear-gradient(135deg, #FF2A1F 0%, #FF6B35 48%, #FFB020 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .scanline-overlay {
+      position: relative;
+    }
+    .scanline-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 42, 31, 0.014) 2px,
+        rgba(255, 42, 31, 0.014) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+      border-radius: inherit;
+    }
+    .noise-bg {
+      position: relative;
+    }
+    .noise-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+    }
+    .glass-strong {
+      background: rgba(18, 18, 24, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-white-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .card-transition {
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-transition:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 22px 40px -15px rgba(255, 42, 31, 0.18);
+    }
+    /* Reversed palette for the customer day-mode view. */
+    .day-mode { filter: invert(1) hue-rotate(180deg); }
+
+    /* Visual emergency alarm for an affected location card. */
+    @keyframes emergency-beep-card {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(239, 68, 68, 0), 0 12px 34px rgba(153, 27, 27, 0.28); }
+      50% { transform: scale(1.025); box-shadow: 0 0 0 8px rgba(248, 113, 113, 0.18), 0 18px 44px rgba(220, 38, 38, 0.52); }
+    }
+    .emergency-beep-card {
+      background: #dc2626 !important;
+      border-color: #fca5a5 !important;
+      animation: emergency-beep-card 0.82s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .emergency-beep-card { animation: none; }
+    }
+    
+    /* Elegant Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #111115;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2a2a35;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #FF2A1F;
+    }
+  </style>
+</head>
+<body class="bg-[#111115] text-[#eceae6] font-inter overflow-x-hidden">
+<div id="root"></div>
+
+<!-- Firebase Realtime Database: live telemetry listener -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, createElement: h, Fragment } = React;
+const { createRoot } = ReactDOM;
+
+// Firebase web configuration for the VenGuard project. The security of this
+// connection comes from Realtime Database rules and authentication, not from
+// hiding these browser-facing values.
+const firebaseConfig = {
+  apiKey: "AIzaSyCvA5ErSmZ878Yv2xRVPC70tIbi1UG0Eho",
+  authDomain: "venguard-detector-new.firebaseapp.com",
+  databaseURL: "https://venguard-detector-new-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "venguard-detector-new",
+  storageBucket: "venguard-detector-new.firebasestorage.app",
+  messagingSenderId: "171340212752",
+  appId: "1:171340212752:web:b7e48e36ccbb1ee27c3895"
+};
+
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const telemetryDatabase = firebase.database();
+const DEVICE_ID = 'VG-KTN-01';
+
+// Inline SVG Icons
+const Flame = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill={props.fill||"none"} stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+  </svg>
+);
+
+const Battery = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <rect width="16" height="10" x="2" y="7" rx="2" ry="2" />
+    <line x1="22" x2="22" y1="11" y2="13" />
+  </svg>
+);
+
+const Zap = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </svg>
+);
+
+const Clock = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+const Shield = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.06 1.06 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+  </svg>
+);
+
+const Lock = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+
+const Globe = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+    <path d="M2 12h20" />
+  </svg>
+);
+
+const Activity = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+  </svg>
+);
+
+const Cpu = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <rect width="16" height="16" x="4" y="4" rx="2" />
+    <rect width="6" height="6" x="9" y="9" rx="1" />
+    <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" />
+  </svg>
+);
+
+const Lightbulb = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+    <path d="M9 18h6" />
+    <path d="M10 22h4" />
+  </svg>
+);
+
+const Wifi = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M12 20h.01" />
+    <path d="M8.5 16.5a5 5 0 0 1 7 0" />
+    <path d="M5 13a10 10 0 0 1 14 0" />
+    <path d="M1.5 9.5a15 15 0 0 1 21 0" />
+  </svg>
+);
+
+const Thermometer = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" />
+  </svg>
+);
+
+const Power = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+    <line x1="12" x2="12" y1="2" y2="12" />
+  </svg>
+);
+
+const Camera = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+    <circle cx="12" cy="13" r="3" />
+  </svg>
+);
+
+const Star = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill={props.fill||"none"} stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
+
+const Menu = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <line x1="4" x2="20" y1="12" y2="12" />
+    <line x1="4" x2="20" y1="6" y2="6" />
+    <line x1="4" x2="20" y1="18" y2="18" />
+  </svg>
+);
+
+const X = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M18 6 6 18" />
+    <path d="M6 6l12 12" />
+  </svg>
+);
+
+const ChevronLeft = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+);
+
+const ChevronRight = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+);
+
+const Twitter = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+  </svg>
+);
+
+const Linkedin = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
+
+const Github = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
+
+const Youtube = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke={props.color||"currentColor"} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z" />
+    <polygon points="10 15 15 12 10 9" />
+  </svg>
+);
+
+// Standard useInView hook for animation on scroll
+function useInView(options = {}) {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1, ...options });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, isVisible];
+}
+
+// CANVAS BACKGROUND - Renders interactive IoT node connections with warm amber lights
+function CanvasBackground({ mousePos }) {
+  const canvasRef = useRef(null);
+  const animRef = useRef(null);
+  const nodesRef = useRef([]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Initial warm mesh nodes
+    const count = 70;
+    nodesRef.current = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      r: 1.2 + Math.random() * 1.8,
+    }));
+
+    const draw = () => {
+      if (!canvas) return;
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const nodes = nodesRef.current;
+      const mp = mousePos.current;
+
+      nodes.forEach(n => {
+        // Subtle mouse attraction
+        if (mp) {
+          const dx = mp.x - n.x;
+          const dy = mp.y - n.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 220) {
+            n.vx += dx * 0.00005;
+            n.vy += dy * 0.00005;
+          }
+        }
+        
+        // Dynamic speed limit
+        const speed = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+        if (speed > 1.0) { n.vx *= 0.96; n.vy *= 0.96; }
+
+        n.x += n.vx;
+        n.y += n.vy;
+        
+        // Wall bounce
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+        
+        n.x = Math.max(0, Math.min(canvas.width, n.x));
+        n.y = Math.max(0, Math.min(canvas.height, n.y));
+
+        // Render node with warm orange amber glow
+        let alpha = 0.25;
+        if (mp) {
+          const dx = mp.x - n.x;
+          const dy = mp.y - n.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 200) alpha = 0.65;
+        }
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 42, 31, ${alpha})`;
+        ctx.fill();
+      });
+
+      // Draw mesh connectivity
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 140) {
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(255, 42, 31, ${0.06 * (1 - dist / 140)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    animRef.current = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full"
+      style={{ pointerEvents: 'none' }}
+    />
+  );
+}
+
+// 3D-STYLE HIGH-FIDELITY SMART HOME HUB COMPONENT (SVG-based)
+function SmartHubSVG({ glowColor, powered }) {
+  // Map glow state to active colors
+  const glowMap = {
+    'warm-orange': { start: '#FF2A1F', end: 'rgba(255, 91, 34, 0)' },
+    'emerald-green': { start: '#22c55e', end: 'rgba(34, 197, 94, 0)' },
+    'electric-blue': { start: '#FF2A1F', end: 'rgba(255, 42, 31, 0)' },
+    'royal-purple': { start: '#a855f7', end: 'rgba(168, 85, 247, 0)' },
+    'off': { start: 'transparent', end: 'transparent' }
+  };
+
+  const activeGlow = powered ? glowMap[glowColor] : glowMap['off'];
+
+  return (
+    <svg className="w-full h-auto max-w-[280px] md:max-w-[340px] drop-shadow-[0_15px_30px_rgba(0,0,0,0.3)] select-none transition-transform duration-500 hover:scale-105" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        {/* Shadow and Table Glow */}
+        <radialGradient id="hubGlowGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={activeGlow.start} stopOpacity="0.8" />
+          <stop offset="40%" stopColor={activeGlow.start} stopOpacity="0.4" />
+          <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Cylinder Body Shading (Isometric Rounded Face) */}
+        <linearGradient id="bodyShading" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="30%" stopColor="#f5f4f0" />
+          <stop offset="65%" stopColor="#dcd8d1" />
+          <stop offset="100%" stopColor="#b4afa8" />
+        </linearGradient>
+
+        {/* Metal Bevel Rim */}
+        <linearGradient id="metalBevel" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="50%" stopColor="#cbd5e1" />
+          <stop offset="100%" stopColor="#94a3b8" />
+        </linearGradient>
+
+        {/* Flat Top Cap Face */}
+        <linearGradient id="topFaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#fbfbf9" />
+          <stop offset="100%" stopColor="#ded9d1" />
+        </linearGradient>
+
+        <linearGradient id="topPanelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#f2effa" />
+          <stop offset="100%" stopColor="#cecac0" />
+        </linearGradient>
+
+        {/* Metallic Bevel Ring */}
+        <linearGradient id="buttonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#a1a1aa" />
+        </linearGradient>
+
+        {/* Grill Side Texture pattern */}
+        <pattern id="grillPattern" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+          <circle cx="2" cy="2" r="1" fill="rgba(0,0,0,0.15)" />
+        </pattern>
+      </defs>
+
+      {/* 1. Ambient Spill Glow on table surface */}
+      <ellipse cx="200" cy="305" rx="140" ry="40" fill="url(#hubGlowGrad)" className="transition-all duration-700" />
+      <ellipse cx="200" cy="305" rx="90" ry="25" fill="black" fillOpacity="0.25" />
+
+      {/* 2. Base Ring Bottom Glow */}
+      <ellipse cx="200" cy="295" rx="100" ry="24" fill="none" stroke={powered ? activeGlow.start : "rgba(0,0,0,0.1)"} strokeWidth="5" opacity="0.8" className="transition-all duration-700" />
+
+      {/* 3. Physical White Bottom Segment */}
+      <path d="M 100,220 C 100,285 300,285 300,220 L 300,290 C 300,296 290,296 200,296 C 110,296 100,296 100,290 Z" fill="#e5e2dd" />
+
+      {/* 4. Main Elegant 3D Box Body (Rounded Cylinder) */}
+      <path d="M 100,160 
+               C 100,215 105,245 130,265 
+               C 160,285 240,285 270,265
+               C 295,245 300,215 300,160 
+               L 300,220 
+               C 300,285 100,285 100,220 Z" fill="url(#bodyShading)" />
+
+      {/* Elegant side ventilation grill details on the right side */}
+      <path d="M 230,220 
+               C 260,225 300,215 300,180
+               L 300,225
+               C 300,255 260,265 230,245 Z" fill="url(#grillPattern)" opacity="0.6" />
+
+      {/* 5. Metallic chamfer ring at the top */}
+      <ellipse cx="200" cy="160" rx="101" ry="31" fill="url(#metalBevel)" />
+
+      {/* 6. Main Top Face Panel */}
+      <ellipse cx="200" cy="159" rx="98" ry="28" fill="url(#topFaceGrad)" />
+      <ellipse cx="200" cy="159" rx="92" ry="24" fill="url(#topPanelGrad)" />
+
+      {/* 7. Beautifully engraved "home" brand text on center front */}
+      <text x="200" y="240" fontFamily="'Onest', sans-serif" fontWeight="300" fontSize="18" fill="rgba(0,0,0,0.3)" textAnchor="middle" letterSpacing="1">VenGuard</text>
+
+      {/* 8. Top Interactive Control Buttons */}
+      {/* Button 1 (Left - Power Icon Button) */}
+      <ellipse cx="150" cy="159" rx="11" ry="5.5" fill="url(#buttonGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+      <ellipse cx="150" cy="159" rx="6" ry="3" fill={powered ? "#FF2A1F" : "#52525b"} className="transition-colors duration-500" />
+
+      {/* Button 2 (Middle - Lights Glow indicator Button) */}
+      <ellipse cx="200" cy="165" rx="11" ry="5.5" fill="url(#buttonGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+      <ellipse cx="200" cy="165" rx="6" ry="3" fill={powered ? activeGlow.start : "#52525b"} className="transition-colors duration-500" />
+
+      {/* Button 3 (Right - Network sync Button) */}
+      <ellipse cx="250" cy="159" rx="11" ry="5.5" fill="url(#buttonGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+      <ellipse cx="250" cy="159" rx="6" ry="3" fill={powered ? "#22c55e" : "#52525b"} className="transition-colors duration-500 animate-pulse" />
+
+      {/* Highlights around buttons */}
+      <ellipse cx="150" cy="162" rx="9" ry="3.5" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" />
+      <ellipse cx="200" cy="168" rx="9" ry="3.5" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" />
+      <ellipse cx="250" cy="162" rx="9" ry="3.5" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" />
+    </svg>
+  );
+}
+
+// NAVBAR COMPONENT
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setMobileOpen(false);
+  };
+
+  const navLinks = [
+    { label: 'Dashboard', id: 'home' },
+  ];
+
+  return (
+    <>
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+        style={{
+          background: scrolled ? 'rgba(17,17,21,0.85)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(20px)' : 'blur(0px)',
+          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'blur(0px)',
+          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <div className="flex items-center cursor-pointer group" onClick={() => scrollTo('home')}>
+              <span className="font-onest font-extrabold text-2xl tracking-tight text-white transition-colors duration-300 group-hover:text-emerald-300">
+                Ven<span className="text-white">Guard</span>
+              </span>
+            </div>
+
+            {/* Desktop Navigation Links */}
+            <div className="hidden lg:flex items-center gap-10">
+              {navLinks.map(link => (
+                <button
+                  key={link.id}
+                  onClick={() => scrollTo(link.id)}
+                  className="text-[#eceae6]/70 hover:text-white transition-colors text-sm font-inter font-medium tracking-wide relative after:absolute after:bottom-[-6px] after:left-0 after:right-0 after:h-[2px] after:bg-lumo-orange after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+
+
+            {/* Customer account */}
+            <div className="hidden lg:flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2">
+              <div className="w-8 h-8 rounded-full bg-emerald-500/15 border border-emerald-400/25 flex items-center justify-center text-emerald-300 font-onest font-bold text-xs">AM</div>
+              <div className="pr-2 leading-tight">
+                <div className="text-sm font-onest font-semibold text-white">Alex Morgan</div>
+                <div className="text-[10px] font-mono tracking-wide text-emerald-300">CUSTOMER</div>
+              </div>
+            </div>
+
+            {/* Mobile Hamburger */}
+            <button
+              aria-label="Toggle Menu"
+              className="lg:hidden text-gray-300 hover:text-white transition-colors focus:outline-none"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 bg-[#111115]/95 backdrop-blur-lg flex flex-col pt-24 px-8 lg:hidden animate-fade-in-up">
+          <div className="flex flex-col gap-6 flex-1">
+            {navLinks.map(link => (
+              <button
+                key={link.id}
+                onClick={() => scrollTo(link.id)}
+                className="text-left text-2xl font-onest font-semibold text-[#eceae6]/85 hover:text-lumo-orange transition-colors"
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// HERO SECTION (THE CORE PIECE MIRRORING THE SCREENSHOT EXACTLY WITH AWESOME INTERACTIVE STATES)
+function HeroSection() {
+  const mousePosRef = useRef(null);
+
+  // VenGuard live dashboard states — aligned with your Streamlit dashboard metrics
+  const [detectorOnline, setDetectorOnline] = useState(false);
+  const [lastHeartbeatAt, setLastHeartbeatAt] = useState(0);
+  const [hasReceivedHeartbeat, setHasReceivedHeartbeat] = useState(false);
+  const [glowColor, setGlowColor] = useState('electric-blue');
+  const [highestGasReading, setHighestGasReading] = useState(66);      // PPM
+  const [highestSmokeReading, setHighestSmokeReading] = useState(12.1); // %
+  const [gasThreshold, setGasThreshold] = useState(100);                // PPM threshold
+  const [smokeThreshold, setSmokeThreshold] = useState(18);             // % threshold
+  const [manualDrill, setManualDrill] = useState(false);
+  const [batteryPercent, setBatteryPercent] = useState(86);
+  const [valveOn, setValveOn] = useState(true);
+  const [gasStatus, setGasStatus] = useState('NORMAL');
+  const [relayState, setRelayState] = useState('INACTIVE');
+  const [lastUpdate, setLastUpdate] = useState(null);
+
+  const gasExceeded = detectorOnline && gasStatus === 'DANGER';
+  const smokeExceeded = false; // The connected detector currently reports MQ-5 gas telemetry only.
+  const fireAlert = detectorOnline && (manualDrill || gasExceeded);
+  const allReadingsNormal = detectorOnline && !fireAlert;
+
+  const statusMessage = !detectorOnline
+    ? 'Detector disconnected. Please check your connection.'
+    : allReadingsNormal
+      ? `✅ All readings normal — Live telemetry received from ${DEVICE_ID}`
+      : `🚨 ALERT: Gas danger reported by ${DEVICE_ID} — Fire alert active`;
+
+  // Live Firebase telemetry from the ESP32. This replaces the demo timer.
+  useEffect(() => {
+    const telemetryRef = telemetryDatabase.ref(`devices/${DEVICE_ID}/telemetry`);
+
+    const onTelemetry = (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        setDetectorOnline(false);
+        return;
+      }
+
+      setDetectorOnline(true);
+      setLastHeartbeatAt(Date.now());
+      setHasReceivedHeartbeat(true);
+      setHighestGasReading(Number(data.gasRaw || 0));
+      setGasStatus(data.gasStatus === 'DANGER' ? 'DANGER' : 'NORMAL');
+      setValveOn(data.valveState === 'ON');
+      setRelayState(data.relayState === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE');
+      setLastUpdate(data.updatedAt || Date.now());
+    };
+
+    const onError = (error) => {
+      console.error('Firebase telemetry connection failed:', error);
+      setDetectorOnline(false);
+    };
+
+    telemetryRef.on('value', onTelemetry, onError);
+    return () => telemetryRef.off('value', onTelemetry);
+  }, []);
+
+  // The ESP32 publishes a five-second heartbeat. Four missed heartbeats mark
+  // the detector as disconnected without needing any change in the firmware.
+  useEffect(() => {
+    const heartbeatWatchdog = setInterval(() => {
+      if (hasReceivedHeartbeat && Date.now() - lastHeartbeatAt > 20000) {
+        setDetectorOnline(false);
+      }
+    }, 2000);
+    return () => clearInterval(heartbeatWatchdog);
+  }, [hasReceivedHeartbeat, lastHeartbeatAt]);
+
+  const handleMouseMove = useCallback((e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mousePosRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }, []);
+
+  const toggleMasterPower = () => {
+    const next = !detectorOnline;
+    setDetectorOnline(next);
+    if (!next) setManualDrill(false);
+  };
+
+  const resetSafeState = () => {
+    setManualDrill(false);
+    setHighestGasReading(66);
+    setHighestSmokeReading(12.1);
+  };
+
+  const statusRows = [
+    {
+      name: 'Gas Sensor Array',
+      desc: detectorOnline ? `${highestGasReading} PPM peak detected` : 'No signal',
+      active: detectorOnline,
+      critical: gasExceeded,
+      icon: <Activity size={16} />,
+    },
+    {
+      name: 'Smoke Sensor',
+      desc: detectorOnline ? `${highestSmokeReading.toFixed(1)}% smoke density` : 'No signal',
+      active: detectorOnline,
+      critical: smokeExceeded,
+      icon: <Thermometer size={16} />,
+    },
+    {
+      name: 'Fire Alert Logic',
+      desc: fireAlert ? 'Alert active — threshold exceeded' : 'No active alerts',
+      active: detectorOnline,
+      critical: fireAlert,
+      icon: <Flame size={16} />,
+    },
+    {
+      name: 'Solenoid Valve',
+      desc: fireAlert ? 'Closed — gas line isolated' : 'Armed — ready to isolate',
+      active: detectorOnline,
+      critical: fireAlert,
+      icon: <Lock size={16} />,
+    },
+    {
+      name: 'Ventilation Relay',
+      desc: fireAlert ? 'Active purge engaged' : 'Standby',
+      active: fireAlert,
+      critical: fireAlert,
+      icon: <Zap size={16} />,
+    },
+    {
+      name: 'Dashboard Telemetry',
+      desc: detectorOnline ? 'Stable live stream' : 'Disconnected',
+      active: detectorOnline,
+      critical: false,
+      icon: <Wifi size={16} />,
+    },
+  ];
+
+  const locationDevices = [
+    { location: 'Main Kitchen', deviceId: 'VG-KTN-01', status: !detectorOnline ? 'DISCONNECTED' : gasExceeded ? 'DANGER' : 'NORMAL', critical: detectorOnline && gasExceeded, disconnected: !detectorOnline },
+    { location: 'Boiler Room', deviceId: 'VG-BLR-02', status: !detectorOnline ? 'DISCONNECTED' : 'NORMAL', critical: false, disconnected: !detectorOnline },
+    { location: 'Cylinder Storage', deviceId: 'VG-CYL-03', status: !detectorOnline ? 'DISCONNECTED' : 'NORMAL', critical: false, disconnected: !detectorOnline },
+    { location: 'Restaurant Line', deviceId: 'VG-RST-04', status: !detectorOnline ? 'DISCONNECTED' : 'NORMAL', critical: false, disconnected: !detectorOnline },
+    { location: 'Industrial Bay', deviceId: 'VG-IND-05', status: !detectorOnline ? 'DISCONNECTED' : 'NORMAL', critical: false, disconnected: !detectorOnline },
+    { location: 'Ventilation Shaft', deviceId: 'VG-VNT-06', status: !detectorOnline ? 'DISCONNECTED' : relayState === 'ACTIVE' ? 'DANGER' : 'NORMAL', critical: detectorOnline && relayState === 'ACTIVE', disconnected: !detectorOnline },
+  ];
+
+  const devicesOnline = detectorOnline ? locationDevices.length : 0;
+  const totalDevices = locationDevices.length;
+
+  const metrics = [
+    {
+      label: 'Highest Gas Reading',
+      value: `${highestGasReading} PPM`,
+      sub: `Threshold ${gasThreshold} PPM`,
+      tone: gasExceeded ? 'danger' : 'safe',
+      icon: <Activity size={16} />,
+    },
+    {
+      label: 'Highest Smoke Reading',
+      value: `${highestSmokeReading.toFixed(1)}%`,
+      sub: `Threshold ${smokeThreshold}%`,
+      tone: smokeExceeded ? 'danger' : 'safe',
+      icon: <Thermometer size={16} />,
+    },
+    {
+      label: 'Fire Alert',
+      value: fireAlert ? 'ACTIVE' : 'CLEAR',
+      sub: fireAlert ? 'Isolation sequence running' : 'No active alerts',
+      tone: fireAlert ? 'danger' : 'safe',
+      icon: <Flame size={16} />,
+    },
+    {
+      label: 'Devices Online',
+      value: `${devicesOnline}/${totalDevices}`,
+      sub: detectorOnline ? 'Telemetry connected' : 'Detector offline',
+      tone: detectorOnline ? 'safe' : 'muted',
+      icon: <Shield size={16} />,
+    },
+  ];
+
+  const gasPercent = Math.min(100, Math.max(0, (highestGasReading / Math.max(gasThreshold, 1)) * 100));
+  const smokePercent = Math.min(100, Math.max(0, (highestSmokeReading / Math.max(smokeThreshold, 1)) * 100));
+  const gaugePercent = Math.max(gasPercent, smokePercent);
+  const strokeOffset = 283 - (283 * gaugePercent) / 100;
+
+  return (
+    <section
+      id="home"
+      className="relative w-full min-h-screen pt-32 pb-24 px-6 sm:px-8 lg:px-12 flex items-center overflow-hidden bg-black"
+    >
+      <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+        {/* LEFT: hero copy + all readings banner + 4 metric guards */}
+        <div className="lg:col-span-5 flex flex-col justify-between h-full gap-8 md:gap-10">
+          <div>
+            <div>
+              <div className="font-mono text-emerald-300 text-[11px] tracking-[0.22em] uppercase mb-4">Customer Safety Dashboard</div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-onest font-extrabold tracking-tight leading-[1.08] text-white">VenGuard Live<br />Gas Safety System</h1>
+              <div className="flex flex-col items-start gap-4 mt-8">
+                <button onClick={() => setValveOn(!valveOn)} className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider transition-colors ${valveOn ? 'bg-emerald-500/15 border-emerald-400/35 text-emerald-200' : 'bg-white/5 border-white/15 text-gray-300'}`}>Valve {valveOn ? 'On' : 'Off'}</button>
+                <button onClick={() => setManualDrill(!manualDrill)} disabled={!detectorOnline} className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider transition-colors disabled:opacity-50 ${manualDrill ? 'bg-red-600 border-red-400/50 text-white' : 'bg-red-500/12 border-red-400/35 text-red-100 hover:bg-red-500/20'}`}>{manualDrill ? 'Clear Fire Alert' : 'Emergency Fire Alert'}</button>
+                <div className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider transition-all duration-300 ${detectorOnline && relayState === 'ACTIVE' ? 'bg-white border-white text-black shadow-[0_0_26px_rgba(255,255,255,0.30)]' : !detectorOnline ? 'bg-white/[0.04] border-white/10 text-gray-400' : 'bg-white/5 border-white/15 text-gray-300'}`}>Relay {!detectorOnline ? 'Unavailable' : relayState === 'ACTIVE' ? 'On' : 'Inactive'}</div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* All readings normal / alert strip */}
+          <div className={`rounded-2xl px-5 py-4 border shadow-2xl font-onest font-bold text-sm md:text-base ${fireAlert ? 'bg-red-600/90 border-red-300/40 text-white animate-pulse shadow-red-500/30' : detectorOnline ? 'bg-emerald-600/90 border-emerald-300/30 text-white shadow-emerald-900/30' : 'bg-gray-700/80 border-gray-500/30 text-gray-200'}`}>
+            {statusMessage}
+          </div>
+
+
+        </div>
+
+        {/* RIGHT: expanded device status dashboard */}
+        <div className="lg:col-span-7 flex flex-col gap-6 w-full z-10">
+          <div className="bg-[#0b0f16]/92 backdrop-blur-2xl rounded-[2.5rem] p-6 md:p-8 border border-white/10 shadow-2xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div>
+                <div className="font-mono text-emerald-300 text-[10px] tracking-[0.22em] uppercase mb-2">Protected Locations</div>
+                <h2 className="text-2xl md:text-3xl font-onest font-extrabold text-white">Device Status Overview</h2>
+                <p className="text-gray-400 text-sm mt-2">Live VenGuard units across your protected locations.</p>
+              </div>
+
+              <div
+                className={`rounded-full px-5 py-3 border flex items-center gap-2 text-xs font-bold font-mono tracking-wide ${detectorOnline ? 'bg-white/5 text-white border-white/15' : 'bg-red-500/15 text-red-100 border-red-400/40'}`}
+              >
+                <span className={`w-2 h-2 rounded-full ${detectorOnline ? fireAlert ? 'bg-red-500 animate-ping' : 'bg-emerald-400 animate-pulse' : 'bg-red-300'}`}></span>
+                Detector Network {detectorOnline ? 'ONLINE' : 'DISCONNECTED'}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {locationDevices.map((device) => (
+                <div
+                  key={device.deviceId}
+                  className={`rounded-3xl p-5 border transition-all duration-300 ${device.critical ? 'emergency-beep-card' : device.disconnected ? 'bg-white/[0.04] border-white/10 opacity-75' : 'bg-gradient-to-br from-emerald-950/85 to-emerald-900/35 border-emerald-400/35 shadow-[0_12px_34px_rgba(6,78,59,0.18)] hover:border-emerald-300/55'}`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-onest font-bold text-white text-base">{device.location}</div>
+                      <div className="font-mono text-[10px] text-white/50 mt-1">{device.deviceId}</div>
+                    </div>
+                    <span className={`w-3 h-3 mt-1 rounded-full ${device.critical ? 'bg-red-400 shadow-[0_0_12px_rgba(248,113,113,0.9)]' : 'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]'}`}></span>
+                  </div>
+                  <div className={`mt-7 text-2xl font-extrabold font-onest tracking-wide ${device.critical ? 'text-white' : 'text-emerald-200'}`}>
+                    {device.status}
+                  </div>
+                  <div className={`mt-2 text-xs font-medium ${device.critical ? 'text-white/85' : device.disconnected ? 'text-gray-400' : 'text-emerald-100/65'}`}>
+                    {device.critical ? 'Attention required' : device.disconnected ? 'Waiting for live telemetry' : 'Safety readings are within range'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+// FOOTER COMPONENT
+function Footer() {
+  const linkGroups = [
+    {
+      title: 'Products',
+      links: ['VenGuard Smart Hub', 'Climate Control', 'Home Security', 'Solar Sync', 'Integrations'],
+    },
+    {
+      title: 'Company',
+      links: ['About Us', 'Careers', 'Brand Kit', 'Sustainability', 'Contact'],
+    },
+    {
+      title: 'Resources',
+      links: ['Installation Manual', 'API Reference', 'User Guide', 'Energy Blog', 'IoT Studies'],
+    },
+    {
+      title: 'Legal',
+      links: ['Privacy Policy', 'Terms of Service', 'Hub SLA', 'Network Policy', 'Cookie Rules'],
+    },
+    {
+      title: 'Support',
+      links: ['Help Center', 'Status Page', 'Community', 'Smart Training', 'Hub FAQ'],
+    },
+  ];
+
+  const socialIcons = [
+    { icon: <Twitter size={14} />, label: 'Twitter' },
+    { icon: <Linkedin size={14} />, label: 'LinkedIn' },
+    { icon: <Github size={14} />, label: 'GitHub' },
+    { icon: <Youtube size={14} />, label: 'YouTube' },
+  ];
+
+  return (
+    <footer className="py-20 px-6 sm:px-8 lg:px-12 bg-[#0b0b0e] border-t border-white/5 relative z-10">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
+          {/* Brand Column */}
+          <div className="col-span-2 md:col-span-1 lg:col-span-1">
+            <div className="flex items-center mb-4">
+              <span className="font-onest font-extrabold text-xl text-white">Ven<span className="text-white">Guard</span></span>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed font-inter">
+              Next-generation smart home ecosystem powered by local secure artificial intelligence. Protecting homes worldwide.
+            </p>
+            <div className="flex gap-3 mt-6">
+              {socialIcons.map((s, i) => (
+                <button
+                  key={i}
+                  aria-label={s.label}
+                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:border-lumo-orange/40 hover:bg-lumo-orange/10 transition-all text-gray-400 hover:text-lumo-orange"
+                >
+                  {s.icon}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Link Columns */}
+          {linkGroups.map((group, i) => (
+            <div key={i} className="pl-0 sm:pl-4">
+              <div className="font-onest font-bold text-white text-xs tracking-wider uppercase mb-5">
+                {group.title}
+              </div>
+              <ul className="space-y-3">
+                {group.links.map((link, j) => (
+                  <li key={j}>
+                    <a
+                      href="#"
+                      onClick={e => e.preventDefault()}
+                      className="text-gray-400 hover:text-lumo-orange text-sm transition-colors block font-inter"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer Base */}
+        <div className="border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-gray-500 text-xs font-mono">
+            &copy; 2026 VenGuard Technologies Inc. All rights reserved.
+          </p>
+          <div className="flex gap-6 text-gray-500 text-xs font-mono">
+            <a href="#" onClick={e => e.preventDefault()} className="hover:text-lumo-orange transition-colors">Security Audit</a>
+            <a href="#" onClick={e => e.preventDefault()} className="hover:text-lumo-orange transition-colors">Server Status</a>
+            <a href="#" onClick={e => e.preventDefault()} className="hover:text-lumo-orange transition-colors">FCC Certified</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// MAIN APP ROUTING & CORE CONTAINER
+function App() {
+  const [isDayMode, setIsDayMode] = useState(false);
+  return (
+    <div className={`min-h-screen bg-black text-[#eceae6] relative ${isDayMode ? 'day-mode' : ''}`}>
+      <button onClick={() => setIsDayMode(!isDayMode)} className="fixed bottom-6 right-6 z-[60] rounded-full border border-white/15 bg-black/80 px-4 py-3 text-xs font-onest font-bold uppercase tracking-wider text-white shadow-2xl hover:border-emerald-400/60 transition-colors" aria-label="Toggle day mode">{isDayMode ? 'Night Mode' : 'Day Mode'}</button>
+      <Navbar />
+      <HeroSection />
+      <Footer />
+    </div>
+  );
+}
+
+// React Mounting
+const root = createRoot(document.getElementById('root'));
+root.render(React.createElement(App));
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a11523cc29b68de2',t:'MTc4MjQwMjc1MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

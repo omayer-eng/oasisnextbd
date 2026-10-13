@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How VenGuard works — sensing, checking, closing, reset</title>
+<meta name="description" content="VenGuard's safety chain in plain words: sensing gas, a 7-second check, closing the valve, and manual reset.">
+<link rel="canonical" href="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/en/how-it-works/">
+<link rel="alternate" hreflang="bn" href="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/how-it-works/">
+<link rel="alternate" hreflang="en" href="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/en/how-it-works/">
+<link rel="alternate" hreflang="x-default" href="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/how-it-works/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VenGuard">
+<meta property="og:title" content="How VenGuard works — sensing, checking, closing, reset">
+<meta property="og:description" content="VenGuard's safety chain in plain words: sensing gas, a 7-second check, closing the valve, and manual reset.">
+<meta property="og:url" content="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/en/how-it-works/">
+<meta property="og:image" content="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B2A4A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5 7v8c0 7 4.7 11.6 11 14 6.3-2.4 11-7 11-14V7L16 3Z' fill='%230B2A4A'/%3E%3Cpath d='M9.5 16.5c2.2-2.6 4.3-2.6 6.5 0s4.3 2.6 6.5 0' stroke='%2312B5A6' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/venguard.css">
+<script>
+/* Remember the visitor's language. Bangla is the default; if they chose English before, take them there. */
+(function(){try{var l=localStorage.getItem("vg_lang");if(l==="en"&&document.documentElement.lang==="bn"&&!/[?&]lang=bn/.test(location.search)){location.replace("../../en/how-it-works/"+location.search+location.hash);}}catch(e){}})();
+</script>
+<script src="../../assets/js/config.js" defer></script>
+<script src="../../assets/js/analytics.js" defer></script>
+<script src="../../assets/js/site.js" defer></script>
+</head>
+<body class="has-mobile-cta" data-page="how-it-works" data-lang="en">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="../../en/" aria-label="VenGuard home"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3 5 7v8c0 7 4.7 11.6 11 14 6.3-2.4 11-7 11-14V7L16 3Z"/><path d="M9.5 16.5c2.2-2.6 4.3-2.6 6.5 0s4.3 2.6 6.5 0" stroke="#12B5A6"/></svg><span>VenGuard</span></a>
+    <nav class="nav" id="site-nav" aria-label="Main menu">
+      <ul>
+        <li><a href="../../en/home-kit/">Home kit</a></li>
+        <li><a href="../../en/how-it-works/" aria-current="page">How it works</a></li>
+        <li><a href="../../en/landlords-restaurants/">Landlords and restaurants</a></li>
+        <li><a href="../../en/dealers/">Dealers</a></li>
+        <li><a href="../../en/guides/">Guides</a></li>
+        <li><a href="../../en/about/">About</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <a href="../../how-it-works/" hreflang="bn" lang="bn" data-lang-switch="bn" aria-current="false">বাংলা</a>
+        <a href="../../en/how-it-works/" hreflang="en" lang="en" data-lang-switch="en" aria-current="true">EN</a>
+      </div>
+      <a class="icon-btn" href="https://wa.me/8801000000000" data-track="whatsapp_click" data-position="header" aria-label="Chat on WhatsApp"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5 5 16.3A8.5 8.5 0 1 1 8 19.2l-4.5 1.3Z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.5-2-1-1 .8c-1-.4-2-1.4-2.4-2.4l.8-1-1-2L9 8.5Z"/></svg></a>
+      <a class="btn btn--primary btn--sm" href="../../en/pre-order/" data-track="cta_preorder_click" data-position="header">Pre-order</a>
+
+      <button class="icon-btn menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Menu"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header><main id="main">
+<section class="page-head">
+  <div class="wrap">
+    <p class="breadcrumb"><a href="../../en/">VenGuard</a> / How it works</p>
+    <h1>How it works</h1>
+<p class="lead">Four steps. None of them needs mains power, the internet or anyone at home — that is how it is designed.</p>  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <ol class="steps" style="grid-template-columns:1fr">
+      <li class="hero-grid" style="gap:16px">
+        <div><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12c2-3 4-3 6 0s4 3 6 0 4-3 4-3"/><path d="M4 17c2-3 4-3 6 0s4 3 6 0"/><path d="M4 7c2-3 4-3 6 0s4 3 6 0"/></svg><h2 style="font-size:1.3rem">1. Sensing</h2><p class="mt-0">The detector checks the kitchen air for LPG all the time. LPG is heavier than air, so the detector is mounted low.</p></div>
+<svg class="diagram" viewBox="0 0 320 180" role="img" aria-label="Detector mounted low on the wall, next to the stove and cylinder" style="width:100%;max-width:420px;color:#0B2A4A" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M10 160h300"/><rect x="40" y="90" width="110" height="70" rx="4"/><path d="M55 90v-8h80v8M70 82c0-8 10-8 10-16M100 82c0-8 10-8 10-16"/>
+  <rect x="190" y="105" width="40" height="55" rx="10"/><path d="M200 105v-10h20v10"/>
+  <rect x="262" y="120" width="26" height="30" rx="4"/><circle cx="275" cy="132" r="5"/>
+  <path d="M160 150c20-6 40 6 60 0s30-8 40-4" stroke="#12B5A6" stroke-width="2.5"/>
+</svg>      </li>
+      <li class="hero-grid" style="gap:16px">
+        <div><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg><h2 style="font-size:1.3rem">2. The 7-second check</h2><p class="mt-0">So that a brief whiff while cooking does not cause a false alarm, VenGuard watches the level for 7 seconds to confirm it is a real leak.</p></div>
+<svg class="diagram" viewBox="0 0 320 180" role="img" aria-label="A leak is confirmed only if the gas level stays above the limit for 7 seconds" style="width:100%;max-width:420px;color:#0B2A4A" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M30 20v140h270"/><path d="M30 80h270" stroke-dasharray="6 6" stroke="#5B6B7A"/>
+  <path d="M30 150c20 0 30-2 40-30s15 20 25 28 20-60 40-62 70-4 100-6 40-2 55-2" stroke="#12B5A6" stroke-width="2.5"/>
+  <path d="M135 168h120M135 162v12M255 162v12"/>
+  <text x="195" y="160" text-anchor="middle" fill="currentColor" stroke="none" font-size="14" font-family="Inter, sans-serif">7 s</text>
+  <text x="300" y="74" text-anchor="end" fill="#5B6B7A" stroke="none" font-size="12" font-family="Inter, sans-serif">limit</text>
+</svg>      </li>
+      <li class="hero-grid" style="gap:16px">
+        <div><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14h5M17 14h5"/><rect x="7" y="10" width="10" height="8" rx="1.5"/><path d="M12 10V6M8.5 4h7"/></svg><h2 style="font-size:1.3rem">3. Closing the valve</h2><p class="mt-0">Once confirmed, the valve shuts off gas from the cylinder. It is designed to close in under 1 second.</p><span class="claim-note">Testing in progress</span></div>
+<svg class="diagram" viewBox="0 0 320 180" role="img" aria-label="The valve closes on the line from cylinder to stove and stops the gas" style="width:100%;max-width:420px;color:#0B2A4A" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="20" y="70" width="50" height="90" rx="12"/><path d="M33 70V58h24v12"/>
+  <path d="M45 58V40h80"/><rect x="125" y="22" width="50" height="36" rx="4"/><path d="M175 40h60v50"/>
+  <path d="M150 22v-10M138 12h24"/><path d="M135 30l30 20M165 30l-30 20" stroke="#12B5A6" stroke-width="2.5"/>
+  <rect x="210" y="90" width="90" height="70" rx="4"/><path d="M225 90v-8h60v8"/>
+</svg>      </li>
+      <li class="hero-grid" style="gap:16px">
+        <div><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><h2 style="font-size:1.3rem">4. Manual reset</h2><p class="mt-0">The valve stays closed until a person resets it. Open the windows to air the room, then reset it in about 10 seconds. This is deliberate, so gas never turns back on by itself.</p></div>
+<svg class="diagram" viewBox="0 0 320 180" role="img" aria-label="Open the window, then press the reset by hand" style="width:100%;max-width:420px;color:#0B2A4A" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="20" y="20" width="110" height="110" rx="4"/><path d="M75 20v110M20 75h55"/><path d="M75 20l40 18v110l-40-18" />
+  <path d="M140 60c15-8 30 8 45 0" stroke="#12B5A6" stroke-width="2.5"/><path d="M140 80c15-8 30 8 45 0" stroke="#12B5A6" stroke-width="2.5"/>
+  <rect x="215" y="40" width="70" height="100" rx="14"/><circle cx="250" cy="90" r="14"/><path d="M250 82v8l5 4"/>
+  <path d="M250 150v-6M236 160c4-10 24-10 28 0"/>
+</svg>      </li>
+    </ol>
+  </div>
+</section>
+<section class="section section--mist">
+  <div class="wrap">
+    <div class="section-head"><h2>What VenGuard does not do</h2></div>
+    <div class="grid grid--3">
+      <div class="card"><h3>The website never controls a valve</h3><p class="muted mt-0">Protection happens entirely in the device.</p></div>
+      <div class="card"><h3>It never turns gas back on by itself</h3><p class="muted mt-0">A person always does the reset.</p></div>
+      <div class="card"><h3>It does not depend on a subscription</h3><p class="muted mt-0">Core Safety is never paywalled.</p></div>
+    </div>
+  </div>
+</section>
+<section class="section"><div class="wrap"><div class="cta-band">
+  <h2>Reserve your VenGuard Home</h2>
+  <p>BDT 500 deposit, fully refundable. We will call you to confirm before delivery.</p>
+  <div class="btn-row mt-2">
+    <a class="btn btn--light" href="../../en/pre-order/" data-track="cta_preorder_click" data-position="final_cta">Pre-order</a>
+
+    <a class="btn btn--ghost-light" href="https://wa.me/8801000000000" data-track="whatsapp_click" data-position="final_cta">Ask on WhatsApp</a>
+  </div>
+</div></div></section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="logo" href="../../en/"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3 5 7v8c0 7 4.7 11.6 11 14 6.3-2.4 11-7 11-14V7L16 3Z"/><path d="M9.5 16.5c2.2-2.6 4.3-2.6 6.5 0s4.3 2.6 6.5 0" stroke="#12B5A6"/></svg><span>VenGuard</span></a>
+        <p class="mt-1">Safety that acts.</p>
+        <p class="small">VenGuard is designed to work with no internet. This website never controls your valve.</p>
+      </div>
+      <div>
+        <h3>Product</h3>
+        <ul>
+          <li><a href="../../en/home-kit/">VenGuard Home kit</a></li>
+          <li><a href="../../en/how-it-works/">How it works</a></li>
+          <li><a href="../../en/pre-order/" data-track="cta_preorder_click" data-position="footer">Pre-order</a></li>
+          <li><a href="../../en/landlords-restaurants/">Landlords and restaurants</a></li>
+          <li><a href="../../en/dealers/">Become a dealer</a></li>
+          <li><a href="../../en/agro-marine/">Agro and Marine (coming soon)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <ul>
+          <li><a href="../../en/about/">About us</a></li>
+          <li><a href="../../en/faq/">FAQ</a></li>
+          <li><a href="../../en/guides/">Safety guides</a></li>
+          <li><a href="../../en/contact/">Contact</a></li>
+          <li><a href="../../assets/docs/venguard-fact-sheet.pdf" data-track="factsheet_download" data-position="footer">Fact sheet (PDF)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="https://wa.me/8801000000000" data-track="whatsapp_click" data-position="footer">WhatsApp</a></li>
+          <li><a href="tel:+8801000000000" data-track="call_click" data-position="footer">+880 1000-000000</a></li>
+          <li><a href="mailto:hello@venguard.example" data-track="email_click" data-position="footer">hello@venguard.example</a></li>
+          <li>Dhaka, Bangladesh (full address to follow)</li>
+          <li>Sat–Thu, 10 a.m. – 6 p.m.</li>
+<li><a href="https://www.facebook.com/" rel="noopener" data-track="social_click" data-position="footer">Facebook</a></li>        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <ul class="btn-row small">
+        <li><a href="../../en/privacy/">Privacy</a></li>
+        <li><a href="../../en/terms/">Terms</a></li>
+        <li><a href="../../en/refund-policy/">Refund policy</a></li>
+        <li><a href="../../en/cookies/">Cookies</a></li>
+        <li><button type="button" class="linkbtn" data-consent-open>Cookie settings</button></li>
+      </ul>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <a href="../../how-it-works/" hreflang="bn" lang="bn" data-lang-switch="bn" aria-current="false">বাংলা</a>
+        <a href="../../en/how-it-works/" hreflang="en" lang="en" data-lang-switch="en" aria-current="true">English</a>
+      </div>
+    </div>
+    <p class="small mt-2">© 2026 VenGuard. All rights reserved.</p>
+  </div>
+</footer><div class="mobile-cta">
+  <a class="btn btn--primary" href="../../en/pre-order/" data-track="cta_preorder_click" data-position="mobile_sticky">Pre-order</a>
+
+  <a class="btn btn--ghost" href="https://wa.me/8801000000000" data-track="whatsapp_click" data-position="mobile_sticky" aria-label="WhatsApp"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5 5 16.3A8.5 8.5 0 1 1 8 19.2l-4.5 1.3Z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.5-2-1-1 .8c-1-.4-2-1.4-2.4-2.4l.8-1-1-2L9 8.5Z"/></svg><span class="visually-hidden">WhatsApp</span></a>
+</div>
+<div class="consent" id="consent" role="region" aria-label="Cookie choice">
+  <div class="wrap">
+    <p>We would like to use cookies to count visits so we can improve this site. Your name and phone number are never sent to these tools. <a href="../../en/cookies/">Details</a></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--ghost btn--sm" data-consent="denied">Essential only</button>
+      <button type="button" class="btn btn--primary btn--sm" data-consent="granted">Accept analytics</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

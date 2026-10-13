@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% import "partials/forms.html" as f %}
+{% set page_title = t("যোগাযোগ — VenGuard", "Contact VenGuard") %}
+{% set page_desc = t("WhatsApp, ফোন বা ইমেইলে VenGuard দলের সাথে যোগাযোগ করুন। সহায়তার সময় ও ঠিকানা।", "Reach the VenGuard team by WhatsApp, phone or email. Support hours and address.") %}
+{% block content %}
+{{ f.page_head(t, url, "যোগাযোগ", "Contact us", "সবচেয়ে দ্রুত উত্তর পেতে WhatsApp-এ লিখুন।", "WhatsApp is the fastest way to reach us.") }}
+<section class="section">
+  <div class="wrap hero-grid" style="align-items:start">
+    <div>
+      <ul class="steps" style="grid-template-columns:1fr">
+        <li>{{ icon("whatsapp") }}<h3>WhatsApp</h3><a class="btn btn--primary btn--sm" href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="contact_page">{{ t("চ্যাট শুরু করুন", "Start a chat") }}</a></li>
+        <li>{{ icon("phone") }}<h3>{{ t("ফোন", "Phone") }}</h3><a href="tel:{{ site.contact.phone_tel }}" data-track="call_click" data-position="contact_page">{{ site.contact.phone_display }}</a></li>
+        <li>{{ icon("mail") }}<h3>{{ t("ইমেইল", "Email") }}</h3><a href="mailto:{{ site.contact.email }}" data-track="email_click" data-position="contact_page">{{ site.contact.email }}</a></li>
+        <li>{{ icon("clock") }}<h3>{{ t("সহায়তার সময়", "Support hours") }}</h3><p class="mt-0">{{ t(site.contact.hours_bn, site.contact.hours_en) }}</p></li>
+        <li>{{ icon("pin") }}<h3>{{ t("ঠিকানা", "Address") }}</h3><p class="mt-0">{{ t(site.contact.address_bn, site.contact.address_en) }}</p></li>
+      </ul>
+    </div>
+    <div>
+      <h2>{{ t("বার্তা পাঠান", "Send a message") }}</h2>
+      <form class="form" data-vg-form="contact" novalidate {{ f.thanks_messages(t) }}>
+        {{ f.hidden(t) }}
+        {{ f.field(t, "name", "আপনার নাম", "Your name", "text", true, "name") }}
+        {{ f.phone(t) }}
+        {{ f.field(t, "email", "ইমেইল", "Email", "email", false, "email", attrs='data-validate="email" data-msg-invalid="' ~ t("সঠিক ইমেইল ঠিকানা লিখুন।", "Please enter a valid email address.") ~ '"') }}
+        {{ f.select(t, "kitchen_type", "বিষয়", "Topic", [("home", t("বাসার জন্য", "For my home")), ("restaurant", t("রেস্তোরাঁ", "Restaurant")), ("landlord", t("বাড়িওয়ালা / ভবন", "Landlord / building")), ("dealer", t("ডিলারশিপ", "Dealership")), ("press", t("সংবাদমাধ্যম / বিনিয়োগ", "Press / investment")), ("support", t("সহায়তা", "Support")), ("other", t("অন্যান্য", "Other"))], true) }}
+        {{ f.field(t, "message", "আপনার বার্তা", "Your message", "textarea", true) }}
+        {{ f.consent(t, url) }}
+        {{ f.status() }}
+        {{ f.submit(t, "পাঠান", "Send") }}
+      </form>
+    </div>
+  </div>
+</section>
+<section class="section section--mist">
+  <div class="wrap">
+    <div class="notice" style="background:#fff">
+      <p class="mt-0"><strong>{{ t("এখনই গ্যাসের গন্ধ পাচ্ছেন?", "Smell gas right now?") }}</strong> {{ t("সিলিন্ডারের রেগুলেটর বন্ধ করুন, জানালা-দরজা খুলে দিন, কোনো সুইচ বা আগুন জ্বালাবেন না, বাইরে গিয়ে ফায়ার সার্ভিসকে ১০২ বা ৯৯৯ নম্বরে ফোন করুন।", "Turn off the cylinder regulator, open doors and windows, do not use switches or flames, go outside and call the fire service on 102 or 999.") }}</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

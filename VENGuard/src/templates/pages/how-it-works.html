@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, airline, preorder_btn, testing_note %}
+{% import "partials/forms.html" as f %}
+{% set page_title = t("VenGuard কীভাবে কাজ করে — টের পাওয়া, যাচাই, ভালভ বন্ধ, রিসেট", "How VenGuard works — sensing, checking, closing, reset") %}
+{% set page_desc = t("সহজ ভাষায় VenGuard-এর সুরক্ষা-শৃঙ্খল: গ্যাস টের পাওয়া, ৭ সেকেন্ডের যাচাই, ভালভ বন্ধ, আর হাতে রিসেট।", "VenGuard's safety chain in plain words: sensing gas, a 7-second check, closing the valve, and manual reset.") %}
+{% block content %}
+{{ f.page_head(t, url, "কীভাবে কাজ করে", "How it works", "চারটি ধাপ। কোনোটির জন্যই বিদ্যুৎ, ইন্টারনেট বা বাসায় কারো থাকা লাগে না — এভাবেই তৈরি।", "Four steps. None of them needs mains power, the internet or anyone at home — that is how it is designed.") }}
+<section class="section">
+  <div class="wrap">
+    {% set chain = [
+      ("sense", t("১. টের পাওয়া", "1. Sensing"), t("ডিটেক্টর প্রতি মুহূর্তে রান্নাঘরের বাতাসে এলপিজি আছে কিনা দেখে। গ্যাস বাতাসের চেয়ে ভারী, তাই ডিটেক্টর নিচের দিকে বসানো হয়।", "The detector checks the kitchen air for LPG all the time. LPG is heavier than air, so the detector is mounted low.")),
+      ("timer", t("২. ৭ সেকেন্ডের যাচাই", "2. The 7-second check"), t("রান্নার সময় এক মুহূর্তের গন্ধে যাতে ভুল সতর্কতা না হয়, VenGuard ৭ সেকেন্ড ধরে মাত্রাটা দেখে নিশ্চিত হয় যে এটি সত্যিকারের লিক।", "So that a brief whiff while cooking does not cause a false alarm, VenGuard watches the level for 7 seconds to confirm it is a real leak.")),
+      ("valve", t("৩. ভালভ বন্ধ", "3. Closing the valve"), (t("নিশ্চিত হলে ভালভ ১ সেকেন্ডের কম সময়ে সিলিন্ডারের গ্যাস বন্ধ করে দেয়।", "Once confirmed, the valve shuts off gas from the cylinder in under 1 second.") if claim("closes_under_1s") else t("নিশ্চিত হলে ভালভ সিলিন্ডারের গ্যাস বন্ধ করে দেয় — ১ সেকেন্ডের কম সময়ে বন্ধ করার লক্ষ্যে তৈরি।", "Once confirmed, the valve shuts off gas from the cylinder. It is designed to close in under 1 second."))),
+      ("reset", t("৪. হাতে রিসেট", "4. Manual reset"), t("ভালভ বন্ধ থাকে যতক্ষণ না একজন মানুষ এসে রিসেট করেন। জানালা খুলে বাতাস চলাচল করান, তারপর প্রায় ১০ সেকেন্ডে রিসেট করুন। এটা ইচ্ছা করেই এমন, যাতে গ্যাস নিজে থেকে আবার চালু না হয়।", "The valve stays closed until a person resets it. Open the windows to air the room, then reset it in about 10 seconds. This is deliberate, so gas never turns back on by itself.")),
+    ] %}
+    <ol class="steps" style="grid-template-columns:1fr">
+      {% for ic, title, body in chain %}
+      <li class="hero-grid" style="gap:16px">
+        <div>{{ icon(ic) }}<h2 style="font-size:1.3rem">{{ title }}</h2><p class="mt-0">{{ body }}</p>{% if ic == "valve" and not claim("closes_under_1s") %}{{ testing_note(t) }}{% endif %}</div>
+        {% include "partials/diagram-" ~ ic ~ ".html" %}
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+<section class="section section--mist">
+  <div class="wrap">
+    <div class="section-head"><h2>{{ t("যা VenGuard করে না", "What VenGuard does not do") }}</h2></div>
+    <div class="grid grid--3">
+      <div class="card"><h3>{{ t("ওয়েবসাইট ভালভ নিয়ন্ত্রণ করে না", "The website never controls a valve") }}</h3><p class="muted mt-0">{{ t("সুরক্ষা পুরোটাই যন্ত্রের ভেতরে।", "Protection happens entirely in the device.") }}</p></div>
+      <div class="card"><h3>{{ t("নিজে থেকে গ্যাস চালু করে না", "It never turns gas back on by itself") }}</h3><p class="muted mt-0">{{ t("রিসেট সবসময় একজন মানুষ করেন।", "A person always does the reset.") }}</p></div>
+      <div class="card"><h3>{{ t("সাবস্ক্রিপশনের ওপর নির্ভর করে না", "It does not depend on a subscription") }}</h3><p class="muted mt-0">{{ t("কোর সেফটি কখনো পেওয়ালের পেছনে নয়।", "Core Safety is never paywalled.") }}</p></div>
+    </div>
+  </div>
+</section>
+<section class="section"><div class="wrap">{% include "partials/cta-band.html" %}</div></section>
+{% endblock %}

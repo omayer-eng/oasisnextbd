@@ -1,0 +1,17 @@
+{% from "partials/macros.html" import icon %}
+{% set labels = {
+  "prototype": (t("প্রোটোটাইপ", "Prototype"), t("কাজ করা প্রোটোটাইপ তৈরি হয়েছে।", "Working prototype built.")),
+  "testing": (t("পরীক্ষা", "Testing"), t("নিরাপত্তা ও নির্ভরযোগ্যতার পরীক্ষা চলছে।", "Safety and reliability testing under way.")),
+  "certification": (t("সার্টিফিকেশনের পথ", "Certification pathway"), t("BUET, BSTI ও সংশ্লিষ্ট সংস্থার সাথে প্রক্রিয়া।", "Working through BUET, BSTI and related bodies.")),
+  "preorders": (t("প্রি-অর্ডার চালু", "Pre-orders open"), t("৳৫০০ ফেরতযোগ্য জামানতে জায়গা নিশ্চিত করুন।", "Reserve yours with a refundable BDT 500 deposit.")),
+} %}
+{% set states = {"done": t("সম্পন্ন", "Done"), "current": t("চলমান", "Now"), "next": t("পরবর্তী", "Next")} %}
+<ol class="timeline">
+  {% for step in site.status_timeline %}
+  <li data-state="{{ step.state }}">
+    <span class="state">{{ icon("check" if step.state == "done" else ("dot" if step.state == "current" else "circle")) }}{{ states[step.state] }}</span>
+    <h3>{{ labels[step.key][0] }}</h3>
+    <p class="muted small mt-0">{{ labels[step.key][1] }}</p>
+  </li>
+  {% endfor %}
+</ol>

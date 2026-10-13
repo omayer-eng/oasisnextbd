@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% import "partials/forms.html" as f %}
+{% set page_title = t("নিরাপত্তা গাইড — VenGuard", "Safety guides — VenGuard") %}
+{% set page_desc = t("রান্নাঘরের গ্যাস নিরাপত্তা নিয়ে ব্যবহারিক লেখা, বিশেষজ্ঞের পর্যালোচনার পর প্রকাশিত।", "Practical articles on kitchen gas safety, published after expert review.") %}
+{% block content %}
+{{ f.page_head(t, url, "নিরাপত্তা গাইড", "Safety guides", "প্রতিটি গাইড প্রকাশের আগে একজন যোগ্য বিশেষজ্ঞ পর্যালোচনা করেন। প্রথম গাইডগুলো শীঘ্রই আসছে।", "Every guide is reviewed by a qualified expert before it is published. The first guides are coming soon.") }}
+<section class="section">
+  <div class="wrap">
+    {# Phase 2: articles live in src/templates/guides/ (or the CMS). Only publish after expert review. #}
+    <div class="grid grid--3">
+      {% for bn, en in [("গ্যাসের গন্ধ পেলে কী করবেন", "What to do if you smell gas"), ("গ্যাসের হোস কীভাবে পরীক্ষা করবেন", "How to check your gas hose"), ("সিলিন্ডার নিরাপদে রাখার নিয়ম", "Keeping a cylinder safely")] %}
+      <div class="card card--mist">{{ icon("doc", "icon") }}<h3>{{ t(bn, en) }}</h3><span class="tag">{{ t("বিশেষজ্ঞের পর্যালোচনায়", "In expert review") }}</span></div>
+      {% endfor %}
+    </div>
+    <div class="notice mt-3"><p class="mt-0"><strong>{{ t("এখনই গ্যাসের গন্ধ পাচ্ছেন?", "Smell gas right now?") }}</strong> {{ t("রেগুলেটর বন্ধ করুন, জানালা-দরজা খুলুন, কোনো সুইচ বা আগুন জ্বালাবেন না, বাইরে গিয়ে ১০২ বা ৯৯৯ নম্বরে ফোন করুন।", "Turn off the regulator, open doors and windows, do not use switches or flames, go outside and call 102 or 999.") }}</p></div>
+  </div>
+</section>
+{% endblock %}

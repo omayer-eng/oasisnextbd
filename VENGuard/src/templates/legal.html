@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% import "partials/forms.html" as f %}
+{% block content %}
+{{ f.page_head(t, url, legal_title_bn, legal_title_en) }}
+<section class="section">
+  <div class="wrap prose">
+    <div class="notice"><p class="mt-0 small">{{ t("খসড়া — আইনজীবীর পর্যালোচনার অপেক্ষায়। সর্বশেষ হালনাগাদ: অক্টোবর ২০২৬।", "Draft — awaiting review by our lawyer. Last updated: October 2026.") }}</p></div>
+    {% block legal %}{% endblock %}
+    <h2>{{ t("যোগাযোগ", "Contact") }}</h2>
+    <p>{{ t("এই নীতি নিয়ে প্রশ্ন থাকলে লিখুন:", "Questions about this policy? Write to") }} <a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a> · {{ site.contact.phone_display }}</p>
+  </div>
+</section>
+{% endblock %}

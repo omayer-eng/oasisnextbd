@@ -1,0 +1,16 @@
+{#- Product showcase: swipeable strip of photos and short silent clips. Content: src/site.json → gallery. -#}
+<div class="gallery" role="region" aria-label="{{ t('পণ্যের ছবি ও ভিডিও', 'Product photos and clips') }}" tabindex="0">
+  {% for g in site.gallery["items"] %}
+  <figure class="gallery-item{% if g.h > g.w %} is-tall{% endif %}">
+    {% if g.type == "video" %}
+    <video muted loop playsinline preload="none" data-inview-play data-name="{{ g.src.split('/')[-1] }}" poster="{{ root }}assets/img/{{ g.poster }}.jpg" width="{{ g.w }}" height="{{ g.h }}" aria-label="{{ t(g.caption_bn, g.caption_en) }}">
+      <source src="{{ root }}{{ g.src }}" type="video/mp4">
+    </video>
+    <button type="button" class="gallery-play" aria-label="{{ t('ভিডিও চালান', 'Play clip') }}"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+    {% else %}
+    <picture><source srcset="{{ root }}assets/img/{{ g.src }}.webp" type="image/webp"><img src="{{ root }}assets/img/{{ g.src }}.jpg" width="{{ g.w }}" height="{{ g.h }}" loading="lazy" alt="{{ t(g.caption_bn, g.caption_en) }}"></picture>
+    {% endif %}
+    <figcaption>{{ t(g.caption_bn, g.caption_en) }}</figcaption>
+  </figure>
+  {% endfor %}
+</div>

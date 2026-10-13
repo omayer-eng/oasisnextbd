@@ -1,0 +1,16 @@
+{% extends "legal.html" %}
+{% set legal_title_bn = "কুকি নীতি" %}{% set legal_title_en = "Cookies policy" %}
+{% set page_title = t("কুকি নীতি — VenGuard", "Cookies policy — VenGuard") %}
+{% set page_desc = t("VenGuard সাইটে কোন কুকি ব্যবহার হয় এবং কীভাবে আপনি বেছে নেবেন।", "Which cookies the VenGuard site uses and how you choose.") %}
+{% block legal %}
+<h2>{{ t("প্রয়োজনীয়", "Essential") }}</h2>
+<p>{{ t("আপনার ভাষা ও কুকি পছন্দ মনে রাখতে আপনার ব্রাউজারে ছোট তথ্য রাখা হয়। এগুলো ছাড়া সাইট ঠিকমতো চলে না, তাই সবসময় চালু থাকে।", "Small values stored in your browser remember your language and cookie choice. The site needs them, so they are always on.") }}</p>
+<h2>{{ t("বিশ্লেষণ (আপনার সম্মতি লাগে)", "Analytics (only with your consent)") }}</h2>
+<ul>
+  <li><strong>Google Analytics 4</strong> — {{ t("কতজন আসেন, কোথা থেকে আসেন, কোন পাতা দেখেন।", "how many visit, where from, which pages.") }}</li>
+  <li><strong>Meta Pixel</strong> — {{ t("Facebook বিজ্ঞাপন কাজ করছে কিনা।", "whether our Facebook ads work.") }}</li>
+  <li><strong>Microsoft Clarity</strong> — {{ t("কোথায় ক্লিক ও স্ক্রল হয় (হিটম্যাপ); ফর্মের লেখা গোপন রাখা হয়।", "where people click and scroll (heatmaps); form entries are masked.") }}</li>
+</ul>
+<p>{{ t("আপনি “শুধু প্রয়োজনীয়” বেছে নিলে এগুলোর কোনোটিই চালু হয় না।", "If you choose “Essential only”, none of these load.") }}</p>
+<p><button type="button" class="btn btn--ghost btn--sm" data-consent-open>{{ t("কুকি পছন্দ বদলান", "Change cookie choice") }}</button></p>
+{% endblock %}

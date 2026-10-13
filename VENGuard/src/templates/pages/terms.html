@@ -1,0 +1,12 @@
+{% extends "legal.html" %}
+{% set legal_title_bn = "শর্তাবলি" %}{% set legal_title_en = "Terms of use" %}
+{% set page_title = t("শর্তাবলি — VenGuard", "Terms of use — VenGuard") %}
+{% set page_desc = t("VenGuard ওয়েবসাইট ও প্রি-অর্ডারের শর্তাবলি।", "Terms for the VenGuard website and pre-orders.") %}
+{% block legal %}
+<h2>{{ t("প্রি-অর্ডার", "Pre-orders") }}</h2>
+<p>{{ t("প্রি-অর্ডার মানে আপনি ফেরতযোগ্য জামানত দিয়ে একটি VenGuard হোম কিট রিজার্ভ করছেন। এটি চূড়ান্ত বিক্রয় নয়। চূড়ান্ত দাম ও ডেলিভারির তারিখ জানানোর পর আপনি কেনা বা জামানত ফেরত নেওয়ার সিদ্ধান্ত নিতে পারবেন।", "A pre-order reserves a VenGuard Home kit with a refundable deposit. It is not a final sale. Once we announce the final price and delivery date, you can decide to buy or take your deposit back.") }}</p>
+<h2>{{ t("পণ্যের অবস্থা", "Product status") }}</h2>
+<p>{{ t("VenGuard এখন পরীক্ষা ও সার্টিফিকেশনের পর্যায়ে আছে। সাইটে যেসব বৈশিষ্ট্য “তৈরি করা হয়েছে” বা “পরীক্ষা চলছে” হিসেবে লেখা, সেগুলো এখনো চূড়ান্তভাবে নিশ্চিত নয়।", "VenGuard is in testing and certification. Features described as “designed to” or “testing in progress” are not yet finally confirmed.") }}</p>
+<h2>{{ t("ওয়েবসাইট", "The website") }}</h2>
+<p>{{ t("এই ওয়েবসাইট শুধু তথ্য ও বিক্রয়ের জন্য। এটি কখনো কোনো ভালভ বা যন্ত্র নিয়ন্ত্রণ করে না। গ্যাসের গন্ধ পেলে সঙ্গে সঙ্গে রেগুলেটর বন্ধ করুন ও ১০২ বা ৯৯৯ নম্বরে ফোন করুন।", "This website is for information and sales only. It never controls a valve or device. If you smell gas, turn off the regulator and call 102 or 999 immediately.") }}</p>
+{% endblock %}

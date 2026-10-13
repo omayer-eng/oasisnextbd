@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, preorder_btn, testing_note, airline %}
+{% import "partials/forms.html" as f %}
+{% set page_title = t("VenGuard হোম কিট — ডিটেক্টর, স্বয়ংক্রিয় ভালভ ও ব্যাটারি", "VenGuard Home kit — detector, automatic valve and batteries") %}
+{% set page_desc = t("VenGuard হোম কিটে কী থাকে, কীভাবে বসাতে হয়, স্পেসিফিকেশন ও দাম। কোর সেফটি একবার কিনলেই, কানেক্টেড প্ল্যান ঐচ্ছিক।", "What is in the VenGuard Home kit, how it installs, specifications and price. Core Safety is a one-time purchase; Connected is optional.") %}
+{% block content %}
+{{ f.page_head(t, url, "VenGuard হোম কিট", "VenGuard Home kit", "বাসার রান্নাঘরের জন্য। গ্যাস টের পায়, নিজেই গ্যাস বন্ধ করে, আর আপনি ১০ সেকেন্ডে রিসেট করেন।", "For your home kitchen. It senses gas, shuts the gas off by itself, and you reset it in 10 seconds.") }}
+
+<section class="section">
+  <div class="wrap hero-grid">
+    <div class="product-shot">
+      <picture><source srcset="{{ root }}assets/img/kit-gray-sm.webp 640w, {{ root }}assets/img/kit-gray.webp 1100w" sizes="(min-width: 880px) 50vw, 100vw" type="image/webp"><img src="{{ root }}assets/img/kit-gray.jpg" width="1100" height="767" alt="{{ t('VenGuard হোম কিট: ভালভ, কন্ট্রোল ইউনিট ও ডিটেক্টর', 'VenGuard Home kit: valve, control unit and detector') }}"></picture>
+    </div>
+    <div>
+      <h2>{{ t("বাক্সে যা থাকে", "What is in the kit") }}</h2>
+      <ul class="steps" style="grid-template-columns:1fr">
+        <li>{{ icon("sense") }}<h3>{{ t("গ্যাস ডিটেক্টর", "Gas detector") }}</h3><p class="muted mt-0">{{ t("রান্নাঘরের দেয়ালে বসে, বাতাসে গ্যাস টের পায়।", "Sits on the kitchen wall and senses gas in the air.") }}</p></li>
+        <li>{{ icon("valve") }}<h3>{{ t("স্বয়ংক্রিয় ভালভ", "Automatic valve") }}</h3><p class="muted mt-0">{{ t("গ্যাস লাইনে বসে, লিক নিশ্চিত হলে গ্যাস বন্ধ করে।", "Fits on the gas line and shuts off gas when a leak is confirmed.") }}</p></li>
+        <li>{{ icon("battery") }}<h3>{{ t("ব্যাটারি", "Batteries") }}</h3><p class="muted mt-0">{{ t("বিদ্যুৎ ছাড়াই চলার জন্য।", "So it runs without mains power.") }}</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <h2>{{ t("প্রতিটি অংশ কাছ থেকে", "Every part, up close") }}</h2>
+    {% include "partials/gallery.html" %}
+  </div>
+</section>
+
+<section class="section section--mist">
+  <div class="wrap">
+    <div class="section-head"><h2>{{ t("কীভাবে বসাবেন", "How it installs") }}</h2><p>{{ t("গ্যাস পাইপ কাটতে বা বদলাতে হয় না, বিশেষ যন্ত্র লাগে না।", "No cutting or changing gas pipes, no special tools.") }}</p></div>
+    <ol class="steps">
+      <li><span class="step-num">{{ num(1) }}</span><h3>{{ t("সিলিন্ডার বন্ধ করুন", "Turn off the cylinder") }}</h3><p class="muted">{{ t("রেগুলেটরের সুইচ বন্ধ করুন।", "Switch the regulator off.") }}</p></li>
+      <li><span class="step-num">{{ num(2) }}</span><h3>{{ t("ভালভ লাগান", "Fit the valve") }}</h3><p class="muted">{{ t("ছবির নির্দেশনা দেখে গ্যাস লাইনে ভালভ বসান।", "Follow the picture guide to fit the valve on the gas line.") }}</p></li>
+      <li><span class="step-num">{{ num(3) }}</span><h3>{{ t("ডিটেক্টর বসান ও পরীক্ষা করুন", "Place the detector and test") }}</h3><p class="muted">{{ t("ডিটেক্টর দেয়ালে লাগান, টেস্ট বাটন চেপে দেখুন।", "Mount the detector and press the test button.") }}</p></li>
+    </ol>
+    <p class="small muted mt-1">{{ t("নিজে বসাতে না চাইলে আমাদের দল বা অনুমোদিত ডিলার বসিয়ে দেবে।", "Prefer not to do it yourself? Our team or an authorised dealer will install it.") }}</p>
+    {# FOUNDERS: add a short silent install video or real install photos here (no autoplay with sound). #}
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>{{ t("স্পেসিফিকেশন", "Specifications") }}</h2>
+    {# CTO: confirm every value before launch. Unconfirmed values are labelled. #}
+    <table class="specs">
+      <tr><th>{{ t("কী টের পায়", "Detects") }}</th><td>{{ t("এলপিজি (রান্নার গ্যাস)", "LPG (cooking gas)") }}</td></tr>
+      <tr><th>{{ t("ভালভ বন্ধ হওয়ার সময়", "Valve closing time") }}</th><td>{% if claim("closes_under_1s") %}{{ t("১ সেকেন্ডের কম", "Under 1 second") }}{% else %}{{ t("লক্ষ্য: ১ সেকেন্ডের কম", "Designed for under 1 second") }} {{ testing_note(t) }}{% endif %}</td></tr>
+      <tr><th>{{ t("ভুল সতর্কতা এড়ানো", "False-alarm check") }}</th><td>{{ t("৭ সেকেন্ডের যাচাই", "7-second confirmation check") }}</td></tr>
+      <tr><th>{{ t("বিদ্যুৎ", "Power") }}</th><td>{{ t("ব্যাটারি", "Batteries") }}{% if not claim("no_power_needed") %} {{ testing_note(t) }}{% endif %}</td></tr>
+      <tr><th>{{ t("ইন্টারনেট", "Internet") }}</th><td>{{ t("মূল সুরক্ষার জন্য লাগে না", "Not needed for core safety") }}{% if not claim("no_internet_needed") %} {{ testing_note(t) }}{% endif %}</td></tr>
+      <tr><th>{{ t("রিসেট", "Reset") }}</th><td>{{ t("হাতে, প্রায় ১০ সেকেন্ড", "Manual, about 10 seconds") }}</td></tr>
+      <tr><th>{{ t("ব্যাটারির আয়ু", "Battery life") }}</th><td class="muted">{{ t("পরীক্ষার পর জানানো হবে", "To be confirmed after testing") }}</td></tr>
+      <tr><th>{{ t("সার্টিফিকেশন", "Certification") }}</th><td>{% if site.certifications_granted %}{{ site.certifications_granted|join(", ") }}{% else %}<span class="muted">{{ t("প্রক্রিয়াধীন", "In progress") }}</span>{% endif %}</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="section section--mist">
+  <div class="wrap">
+    <div class="section-head"><h2>{{ t("দাম", "Price") }}</h2></div>
+    <div class="grid grid--2">
+      <div class="card">
+        <span class="tag tag--teal">{{ t("কোর সেফটি", "Core Safety") }}</span>
+        <p class="price">{% if site.preorder.kit_price_bdt %}{{ t("৳" ~ num(site.preorder.kit_price_bdt), "BDT " ~ num(site.preorder.kit_price_bdt)) }}{% else %}{{ t(site.preorder.kit_price_note_bn, site.preorder.kit_price_note_en) }}{% endif %}</p>
+        <p>{{ t("একবার কিনলেই। অফলাইনে কাজ করার জন্য তৈরি। কখনো পেওয়ালের পেছনে নয়।", "One-time purchase. Designed to work offline. Never paywalled.") }}</p>
+        <p class="small muted">{{ t("এখন ৳" ~ num(site.preorder.deposit_bdt) ~ " ফেরতযোগ্য জামানতে প্রি-অর্ডার।", "Pre-order now with a BDT " ~ num(site.preorder.deposit_bdt) ~ " refundable deposit.") }}</p>
+        {{ preorder_btn(t, url, site, "product_price") }}
+      </div>
+      <div class="card">
+        <span class="tag">{{ t("কানেক্টেড (ঐচ্ছিক)", "Connected (optional)") }}</span>
+        <p class="price">{{ t("৳" ~ num(site.preorder.connected_plan_bdt_per_year) ~ " / বছর", "BDT " ~ num(site.preorder.connected_plan_bdt_per_year) ~ " / year") }}</p>
+        <ul><li>{{ t("দূর থেকে ভালভ বন্ধ", "Remote close") }}</li><li>{{ t("ফোনে সতর্কবার্তা", "Phone alerts") }}</li><li>{{ t("বাড়িওয়ালাদের জন্য ড্যাশবোর্ড", "Landlord dashboard") }}</li></ul>
+        <p class="small muted">{{ t("পরে চালু হবে। না নিলেও কোর সেফটি পুরোপুরি কাজ করবে।", "Launching later. Core Safety works fully without it.") }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section"><div class="wrap">{% include "partials/cta-band.html" %}</div></section>
+{% endblock %}

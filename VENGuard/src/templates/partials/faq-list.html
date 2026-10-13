@@ -1,0 +1,48 @@
+{#- FAQ entries. Shared by the homepage (first faq_limit) and the FAQ page.
+    Founders: edit questions and answers here; keep claims in line with the claims rule. -#}
+{% set faqs = [
+  ("blackout",
+    t("লোডশেডিংয়ের সময় কি কাজ করে?", "Does it work in a blackout?"),
+    t("হ্যাঁ, সেভাবেই তৈরি। VenGuard ব্যাটারিতে চলে, তাই বিদ্যুৎ চলে গেলেও গ্যাস টের পাওয়া ও ভালভ বন্ধ করা চালু থাকার কথা। এটি এখন পরীক্ষাধীন, ফলাফল পেলে আমরা এখানে জানাব।",
+      "Yes, that is how it is designed. VenGuard runs on batteries, so sensing and closing the valve are meant to keep working when the power goes. This is being tested now and we will publish the results here.")),
+  ("wifi",
+    t("Wi-Fi বা ইন্টারনেট লাগে কি?", "Does it need Wi-Fi?"),
+    t("না। মূল সুরক্ষা পুরোটাই যন্ত্রের ভেতরে হয়, ইন্টারনেট লাগে না। ঐচ্ছিক কানেক্টেড প্ল্যান নিলে তবেই ফোনে সতর্কবার্তা ও দূর থেকে বন্ধ করার জন্য ইন্টারনেট লাগে।",
+      "No. The core protection happens inside the device and does not need the internet. Only the optional Connected plan uses the internet, for phone alerts and remote close.")),
+  ("install",
+    t("নিজে বসানো কি নিরাপদ?", "Is it safe to install myself?"),
+    t("VenGuard এমনভাবে তৈরি যাতে গ্যাস পাইপ কাটতে বা বদলাতে না হয় এবং বিশেষ যন্ত্র না লাগে। ছবিসহ ধাপে ধাপে নির্দেশনা থাকবে। নিশ্চিত না হলে আমাদের দল বা অনুমোদিত ডিলার বসিয়ে দিতে পারবে।",
+      "VenGuard is designed so you do not cut or change gas pipes and need no special tools. You will get step-by-step picture instructions. If you are unsure, our team or an authorised dealer can install it for you.")),
+  ("after-close",
+    t("ভালভ বন্ধ হওয়ার পর কী হয়?", "What happens after it closes the valve?"),
+    t("গ্যাস বন্ধ থাকে, আর ডিটেক্টরের আলো জানায় যে ভালভ বন্ধ হয়েছে। জানালা খুলে দিন, কোনো সুইচ বা আগুন জ্বালাবেন না। জায়গাটা নিরাপদ হলে হাতে রিসেট করুন, এতে প্রায় ১০ সেকেন্ড লাগে।",
+      "The gas stays off and the detector's light shows that the valve has closed. Open the windows and do not use switches or flames. Once the area is safe, reset it by hand; it takes about 10 seconds.")),
+  ("cost",
+    t("দাম কত?", "What does it cost?"),
+    t("এখন ৳" ~ num(site.preorder.deposit_bdt) ~ " ফেরতযোগ্য জামানত দিয়ে প্রি-অর্ডার করা যায়। হোম কিটের চূড়ান্ত দাম শীঘ্রই জানানো হবে, আর জামানত সেই দাম থেকে বাদ যাবে। ঐচ্ছিক কানেক্টেড প্ল্যান বছরে ৳" ~ num(site.preorder.connected_plan_bdt_per_year) ~ "।",
+      "You can pre-order now with a refundable BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit. The final Home kit price will be announced soon, and your deposit comes off that price. The optional Connected plan is BDT " ~ num(site.preorder.connected_plan_bdt_per_year) ~ " a year.")),
+  ("refund",
+    t("জামানত কীভাবে ফেরত পাব?", "How do I get a refund of the deposit?"),
+    t("ডেলিভারির আগে যেকোনো সময় WhatsApp, ফোন বা ইমেইলে আপনার অর্ডার নম্বর দিয়ে জানান। যে মাধ্যমে টাকা দিয়েছেন, সেখানেই ফেরত পাঠানো হবে। বিস্তারিত ফেরত নীতিতে দেখুন।",
+      "Tell us any time before delivery by WhatsApp, phone or email, with your order number. We send the money back the way you paid. See the refund policy for details.")),
+  ("cylinders",
+    t("কোন সিলিন্ডারে লাগানো যায়?", "Which cylinders does it fit?"),
+    t("আমরা বাংলাদেশে প্রচলিত গৃহস্থালি এলপিজি সিলিন্ডার ও রেগুলেটরের জন্য VenGuard তৈরি করছি। কোন কোন ব্র্যান্ডে মিলবে তার নিশ্চিত তালিকা পরীক্ষা শেষে প্রকাশ করব। প্রি-অর্ডার ফর্মে আপনার সিলিন্ডারের ব্র্যান্ড লিখলে আমরা মিলিয়ে দেখব।",
+      "We are designing VenGuard for the household LPG cylinders and regulators common in Bangladesh. We will publish a confirmed list of brands after testing. Tell us your cylinder brand in the pre-order form and we will check it for you.")),
+  ("vs-alarm",
+    t("সাধারণ অ্যালার্মের সাথে পার্থক্য কী?", "How is it different from an alarm?"),
+    t("অ্যালার্ম শুধু শব্দ করে, তারপর কাউকে এসে গ্যাস বন্ধ করতে হয়। VenGuard এমনভাবে তৈরি যাতে নিজেই গ্যাস বন্ধ করে, কেউ বাসায় না থাকলেও।",
+      "An alarm only makes noise; then someone has to come and turn off the gas. VenGuard is designed to turn off the gas itself, even when nobody is home.")),
+  ("delivery",
+    t("কবে হাতে পাব?", "When will I receive it?"),
+    t("পরীক্ষা ও সার্টিফিকেশন শেষ হলে ডেলিভারি শুরু হবে। আমরা অনুমান করে তারিখ দিতে চাই না; তারিখ ঠিক হলে প্রি-অর্ডারকারীদের সবার আগে SMS ও WhatsApp-এ জানাব।",
+      "Deliveries start once testing and certification are complete. We do not want to guess a date; when it is set, pre-order customers hear first by SMS and WhatsApp.")),
+] %}
+<div class="faq">
+  {% for id, q, a in faqs[:faq_limit] %}
+  <details data-faq="{{ id }}" id="faq-{{ id }}">
+    <summary>{{ q }}</summary>
+    <div class="answer"><p>{{ a }}</p></div>
+  </details>
+  {% endfor %}
+</div>
